@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Transcriber</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 Audio Transcriber</h1>
+            <p>Transcribe your audio files using AI - Private, Local, Fast</p>
+        </header>
+
+        <main>
+            <!-- Upload Section -->
+            <section class="upload-section" id="uploadSection">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <div class="upload-icon">📁</div>
+                        <h3>Drop your audio file here</h3>
+                        <p>or <span class="upload-link">click to browse</span></p>
+                        <input type="file" id="fileInput" accept=".mp3,.wav,.m4a,.aac,.ogg,.flac,.wma" hidden>
+                    </div>
+                </div>
+                
+                <div class="file-info" id="fileInfo" style="display: none;">
+                    <div class="file-details">
+                        <span class="file-name" id="fileName"></span>
+                        <span class="file-size" id="fileSize"></span>
+                    </div>
+                    <button class="btn btn-primary" id="startTranscription">Start Transcription</button>
+                </div>
+            </section>
+
+            <!-- Progress Section -->
+            <section class="progress-section" id="progressSection" style="display: none;">
+                <h3>Transcribing Audio...</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-text" id="progressText">Initializing...</p>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <h3>Transcription Complete!</h3>
+                <div class="results-content">
+                    <div class="transcription-preview" id="transcriptionPreview"></div>
+                    <div class="download-options">
+                        <h4>Download Formats:</h4>
+                        <div class="download-buttons">
+                            <button class="btn btn-download" data-format="txt">📄 TXT</button>
+                            <button class="btn btn-download" data-format="json">📊 JSON</button>
+                            <button class="btn btn-download" data-format="srt">🎬 SRT</button>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" id="newTranscription">Transcribe Another File</button>
+            </section>
+
+            <!-- Error Section -->
+            <section class="error-section" id="errorSection" style="display: none;">
+                <div class="error-content">
+                    <h3>❌ Error</h3>
+                    <p id="errorMessage"></p>
+                    <button class="btn btn-secondary" id="tryAgain">Try Again</button>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="features">
+                <div class="feature">
+                    <h4>🔒 Private</h4>
+                    <p>All processing happens locally on your machine</p>
+                </div>
+                <div class="feature">
+                    <h4>⚡ Fast</h4>
+                    <p>Optimized for speed with high-quality results</p>
+                </div>
+                <div class="feature">
+                    <h4>📱 Apple Notes Ready</h4>
+                    <p>Perfect for transcribing recordings from Apple Notes</p>
+                </div>
+            </div>
+            
+            <div class="help">
+                <h4>How to use with Apple Notes:</h4>
+                <ol>
+                    <li>Open Apple Notes and find your recording</li>
+                    <li>Tap the recording → Share → Save to Files</li>
+                    <li>Upload the saved file here</li>
+                    <li>Download your transcription!</li>
+                </ol>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

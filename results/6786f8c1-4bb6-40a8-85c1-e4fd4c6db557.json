@@ -1,0 +1,918 @@
+{
+  "text": "be. So our proposals to take a pause and develop a comprehensive impact assessment. It's meant to unify our understanding, open the opportunity to address the wrongs in this measure. We submit this to the committee for its consideration and we're not in a position to adopt this agenda. Thank you very much. Thank you, Senator Rio. United States please. Good morning and I want to reiterate the thank you to all of the delegations and members here today. The United States would like to associate ourselves generally with the comments of the Kingdom of Saudi Arabia and we appreciate the work that has gotten to this committee. We would also like to reiterate the position of the Secretary of State and other cabinet officials that was released last week. Thank you. Thank you United States. Russian Federation please.",
+  "language": "en",
+  "duration": 57.24,
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 6.02,
+      "text": "be. So our proposals to take a pause and develop a comprehensive impact assessment. It's",
+      "words": [
+        {
+          "word": " be.",
+          "start": 0.0,
+          "end": 0.22,
+          "probability": 0.056637365370988846
+        },
+        {
+          "word": " So",
+          "start": 0.92,
+          "end": 1.16,
+          "probability": 0.8559030294418335
+        },
+        {
+          "word": " our",
+          "start": 1.16,
+          "end": 1.3,
+          "probability": 0.6498016119003296
+        },
+        {
+          "word": " proposals",
+          "start": 1.3,
+          "end": 1.72,
+          "probability": 0.5533090233802795
+        },
+        {
+          "word": " to",
+          "start": 1.72,
+          "end": 1.98,
+          "probability": 0.9632307291030884
+        },
+        {
+          "word": " take",
+          "start": 1.98,
+          "end": 2.16,
+          "probability": 0.996385931968689
+        },
+        {
+          "word": " a",
+          "start": 2.16,
+          "end": 2.3,
+          "probability": 0.6170583367347717
+        },
+        {
+          "word": " pause",
+          "start": 2.3,
+          "end": 2.62,
+          "probability": 0.9918327331542969
+        },
+        {
+          "word": " and",
+          "start": 2.62,
+          "end": 3.34,
+          "probability": 0.9377564787864685
+        },
+        {
+          "word": " develop",
+          "start": 3.34,
+          "end": 3.62,
+          "probability": 0.985880434513092
+        },
+        {
+          "word": " a",
+          "start": 3.62,
+          "end": 3.82,
+          "probability": 0.8288119435310364
+        },
+        {
+          "word": " comprehensive",
+          "start": 3.82,
+          "end": 4.36,
+          "probability": 0.9998763799667358
+        },
+        {
+          "word": " impact",
+          "start": 4.36,
+          "end": 4.78,
+          "probability": 0.9831498265266418
+        },
+        {
+          "word": " assessment.",
+          "start": 4.78,
+          "end": 5.38,
+          "probability": 0.998477041721344
+        },
+        {
+          "word": " It's",
+          "start": 5.7,
+          "end": 6.02,
+          "probability": 0.9822886884212494
+        }
+      ]
+    },
+    {
+      "start": 6.02,
+      "end": 10.54,
+      "text": "meant to unify our understanding, open the opportunity to address the wrongs in this",
+      "words": [
+        {
+          "word": " meant",
+          "start": 6.02,
+          "end": 6.16,
+          "probability": 0.9702708721160889
+        },
+        {
+          "word": " to",
+          "start": 6.16,
+          "end": 6.34,
+          "probability": 0.9991733431816101
+        },
+        {
+          "word": " unify",
+          "start": 6.34,
+          "end": 6.8,
+          "probability": 0.9733978509902954
+        },
+        {
+          "word": " our",
+          "start": 6.8,
+          "end": 7.22,
+          "probability": 0.9976983666419983
+        },
+        {
+          "word": " understanding,",
+          "start": 7.22,
+          "end": 7.86,
+          "probability": 0.9960243701934814
+        },
+        {
+          "word": " open",
+          "start": 8.36,
+          "end": 8.62,
+          "probability": 0.9837333559989929
+        },
+        {
+          "word": " the",
+          "start": 8.62,
+          "end": 8.82,
+          "probability": 0.9971075654029846
+        },
+        {
+          "word": " opportunity",
+          "start": 8.82,
+          "end": 9.28,
+          "probability": 0.9932951331138611
+        },
+        {
+          "word": " to",
+          "start": 9.28,
+          "end": 9.52,
+          "probability": 0.9976321458816528
+        },
+        {
+          "word": " address",
+          "start": 9.52,
+          "end": 9.76,
+          "probability": 0.9981308579444885
+        },
+        {
+          "word": " the",
+          "start": 9.76,
+          "end": 9.96,
+          "probability": 0.9950284361839294
+        },
+        {
+          "word": " wrongs",
+          "start": 9.96,
+          "end": 10.36,
+          "probability": 0.9662061929702759
+        },
+        {
+          "word": " in",
+          "start": 10.36,
+          "end": 10.38,
+          "probability": 0.9557616114616394
+        },
+        {
+          "word": " this",
+          "start": 10.38,
+          "end": 10.54,
+          "probability": 0.9924318790435791
+        }
+      ]
+    },
+    {
+      "start": 10.54,
+      "end": 14.7,
+      "text": "measure. We submit this to the committee for its consideration and we're not in a position",
+      "words": [
+        {
+          "word": " measure.",
+          "start": 10.54,
+          "end": 10.82,
+          "probability": 0.9875292778015137
+        },
+        {
+          "word": " We",
+          "start": 11.18,
+          "end": 11.3,
+          "probability": 0.985745906829834
+        },
+        {
+          "word": " submit",
+          "start": 11.3,
+          "end": 11.64,
+          "probability": 0.9944243431091309
+        },
+        {
+          "word": " this",
+          "start": 11.64,
+          "end": 11.86,
+          "probability": 0.9545884132385254
+        },
+        {
+          "word": " to",
+          "start": 11.86,
+          "end": 12.02,
+          "probability": 0.9964555501937866
+        },
+        {
+          "word": " the",
+          "start": 12.02,
+          "end": 12.12,
+          "probability": 0.9983081817626953
+        },
+        {
+          "word": " committee",
+          "start": 12.12,
+          "end": 12.34,
+          "probability": 0.47211897373199463
+        },
+        {
+          "word": " for",
+          "start": 12.34,
+          "end": 12.6,
+          "probability": 0.9301115274429321
+        },
+        {
+          "word": " its",
+          "start": 12.6,
+          "end": 12.72,
+          "probability": 0.9669299721717834
+        },
+        {
+          "word": " consideration",
+          "start": 12.72,
+          "end": 13.26,
+          "probability": 0.9859471321105957
+        },
+        {
+          "word": " and",
+          "start": 13.26,
+          "end": 13.9,
+          "probability": 0.510928213596344
+        },
+        {
+          "word": " we're",
+          "start": 13.9,
+          "end": 14.06,
+          "probability": 0.8122376799583435
+        },
+        {
+          "word": " not",
+          "start": 14.06,
+          "end": 14.2,
+          "probability": 0.9535327553749084
+        },
+        {
+          "word": " in",
+          "start": 14.2,
+          "end": 14.36,
+          "probability": 0.9932045936584473
+        },
+        {
+          "word": " a",
+          "start": 14.36,
+          "end": 14.42,
+          "probability": 0.9750010967254639
+        },
+        {
+          "word": " position",
+          "start": 14.42,
+          "end": 14.7,
+          "probability": 0.9981498718261719
+        }
+      ]
+    },
+    {
+      "start": 14.7,
+      "end": 18.46,
+      "text": "to adopt this agenda. Thank you very much. Thank you, Senator Rio.",
+      "words": [
+        {
+          "word": " to",
+          "start": 14.7,
+          "end": 14.94,
+          "probability": 0.9991348385810852
+        },
+        {
+          "word": " adopt",
+          "start": 14.94,
+          "end": 15.16,
+          "probability": 0.975573718547821
+        },
+        {
+          "word": " this",
+          "start": 15.16,
+          "end": 15.46,
+          "probability": 0.9371140003204346
+        },
+        {
+          "word": " agenda.",
+          "start": 15.46,
+          "end": 15.86,
+          "probability": 0.9965072274208069
+        },
+        {
+          "word": " Thank",
+          "start": 16.08,
+          "end": 16.22,
+          "probability": 0.9968319535255432
+        },
+        {
+          "word": " you",
+          "start": 16.22,
+          "end": 16.3,
+          "probability": 0.9959339499473572
+        },
+        {
+          "word": " very",
+          "start": 16.3,
+          "end": 16.44,
+          "probability": 0.980960488319397
+        },
+        {
+          "word": " much.",
+          "start": 16.44,
+          "end": 16.84,
+          "probability": 0.999526858329773
+        },
+        {
+          "word": " Thank",
+          "start": 17.72,
+          "end": 17.84,
+          "probability": 0.6095268130302429
+        },
+        {
+          "word": " you,",
+          "start": 17.84,
+          "end": 17.94,
+          "probability": 0.9930270314216614
+        },
+        {
+          "word": " Senator",
+          "start": 18.02,
+          "end": 18.18,
+          "probability": 0.21521705389022827
+        },
+        {
+          "word": " Rio.",
+          "start": 18.18,
+          "end": 18.46,
+          "probability": 0.3046514093875885
+        }
+      ]
+    },
+    {
+      "start": 20.76,
+      "end": 29.08,
+      "text": "United States please. Good morning and I want to reiterate the thank you to all of the",
+      "words": [
+        {
+          "word": " United",
+          "start": 20.76,
+          "end": 21.28,
+          "probability": 0.673710286617279
+        },
+        {
+          "word": " States",
+          "start": 21.28,
+          "end": 21.48,
+          "probability": 0.5833858847618103
+        },
+        {
+          "word": " please.",
+          "start": 21.48,
+          "end": 21.78,
+          "probability": 0.3704679310321808
+        },
+        {
+          "word": " Good",
+          "start": 23.74,
+          "end": 24.12,
+          "probability": 0.9654008150100708
+        },
+        {
+          "word": " morning",
+          "start": 24.12,
+          "end": 24.44,
+          "probability": 0.9804141521453857
+        },
+        {
+          "word": " and",
+          "start": 24.44,
+          "end": 25.04,
+          "probability": 0.5814242959022522
+        },
+        {
+          "word": " I",
+          "start": 25.04,
+          "end": 25.28,
+          "probability": 0.9943714737892151
+        },
+        {
+          "word": " want",
+          "start": 25.28,
+          "end": 25.44,
+          "probability": 0.9458526372909546
+        },
+        {
+          "word": " to",
+          "start": 25.44,
+          "end": 25.54,
+          "probability": 0.9992067217826843
+        },
+        {
+          "word": " reiterate",
+          "start": 25.54,
+          "end": 25.96,
+          "probability": 0.998387336730957
+        },
+        {
+          "word": " the",
+          "start": 25.96,
+          "end": 26.82,
+          "probability": 0.5979728102684021
+        },
+        {
+          "word": " thank",
+          "start": 26.82,
+          "end": 27.18,
+          "probability": 0.9618366360664368
+        },
+        {
+          "word": " you",
+          "start": 27.18,
+          "end": 27.4,
+          "probability": 0.9893591403961182
+        },
+        {
+          "word": " to",
+          "start": 27.4,
+          "end": 27.72,
+          "probability": 0.9811027646064758
+        },
+        {
+          "word": " all",
+          "start": 27.72,
+          "end": 28.28,
+          "probability": 0.9969961643218994
+        },
+        {
+          "word": " of",
+          "start": 28.28,
+          "end": 28.74,
+          "probability": 0.9928263425827026
+        },
+        {
+          "word": " the",
+          "start": 28.74,
+          "end": 29.08,
+          "probability": 0.9988289475440979
+        }
+      ]
+    },
+    {
+      "start": 29.08,
+      "end": 34.6,
+      "text": "delegations and members here today. The United States would like to associate ourselves",
+      "words": [
+        {
+          "word": " delegations",
+          "start": 29.08,
+          "end": 29.98,
+          "probability": 0.6321123987436295
+        },
+        {
+          "word": " and",
+          "start": 29.98,
+          "end": 30.26,
+          "probability": 0.9573050141334534
+        },
+        {
+          "word": " members",
+          "start": 30.26,
+          "end": 30.54,
+          "probability": 0.985524594783783
+        },
+        {
+          "word": " here",
+          "start": 30.54,
+          "end": 30.86,
+          "probability": 0.9801512956619263
+        },
+        {
+          "word": " today.",
+          "start": 30.86,
+          "end": 31.24,
+          "probability": 0.9979578256607056
+        },
+        {
+          "word": " The",
+          "start": 31.86,
+          "end": 32.18,
+          "probability": 0.971421480178833
+        },
+        {
+          "word": " United",
+          "start": 32.18,
+          "end": 32.34,
+          "probability": 0.9621282815933228
+        },
+        {
+          "word": " States",
+          "start": 32.34,
+          "end": 32.7,
+          "probability": 0.9974205493927002
+        },
+        {
+          "word": " would",
+          "start": 32.7,
+          "end": 32.96,
+          "probability": 0.9982514977455139
+        },
+        {
+          "word": " like",
+          "start": 32.96,
+          "end": 33.16,
+          "probability": 0.9932976365089417
+        },
+        {
+          "word": " to",
+          "start": 33.16,
+          "end": 33.6,
+          "probability": 0.9981180429458618
+        },
+        {
+          "word": " associate",
+          "start": 33.6,
+          "end": 34.28,
+          "probability": 0.9917759895324707
+        },
+        {
+          "word": " ourselves",
+          "start": 34.28,
+          "end": 34.6,
+          "probability": 0.8223993182182312
+        }
+      ]
+    },
+    {
+      "start": 34.6,
+      "end": 41.44,
+      "text": "generally with the comments of the Kingdom of Saudi Arabia and we appreciate the work that",
+      "words": [
+        {
+          "word": " generally",
+          "start": 34.6,
+          "end": 35.1,
+          "probability": 0.8257132172584534
+        },
+        {
+          "word": " with",
+          "start": 35.1,
+          "end": 35.44,
+          "probability": 0.9917187690734863
+        },
+        {
+          "word": " the",
+          "start": 35.44,
+          "end": 35.62,
+          "probability": 0.9580462574958801
+        },
+        {
+          "word": " comments",
+          "start": 35.62,
+          "end": 36.1,
+          "probability": 0.9541638493537903
+        },
+        {
+          "word": " of",
+          "start": 36.1,
+          "end": 36.68,
+          "probability": 0.9578350186347961
+        },
+        {
+          "word": " the",
+          "start": 36.68,
+          "end": 36.74,
+          "probability": 0.9761270880699158
+        },
+        {
+          "word": " Kingdom",
+          "start": 36.74,
+          "end": 36.94,
+          "probability": 0.7839776873588562
+        },
+        {
+          "word": " of",
+          "start": 36.94,
+          "end": 37.12,
+          "probability": 0.9763230681419373
+        },
+        {
+          "word": " Saudi",
+          "start": 37.12,
+          "end": 37.32,
+          "probability": 0.9960666298866272
+        },
+        {
+          "word": " Arabia",
+          "start": 37.32,
+          "end": 37.72,
+          "probability": 0.9980337023735046
+        },
+        {
+          "word": " and",
+          "start": 37.72,
+          "end": 39.2,
+          "probability": 0.3827265799045563
+        },
+        {
+          "word": " we",
+          "start": 39.2,
+          "end": 39.58,
+          "probability": 0.9690359830856323
+        },
+        {
+          "word": " appreciate",
+          "start": 39.58,
+          "end": 40.16,
+          "probability": 0.998054027557373
+        },
+        {
+          "word": " the",
+          "start": 40.16,
+          "end": 40.98,
+          "probability": 0.9950882792472839
+        },
+        {
+          "word": " work",
+          "start": 40.98,
+          "end": 41.22,
+          "probability": 0.9993777275085449
+        },
+        {
+          "word": " that",
+          "start": 41.22,
+          "end": 41.44,
+          "probability": 0.9953575730323792
+        }
+      ]
+    },
+    {
+      "start": 41.44,
+      "end": 46.8,
+      "text": "has gotten to this committee. We would also like to reiterate the position of the Secretary of",
+      "words": [
+        {
+          "word": " has",
+          "start": 41.44,
+          "end": 41.58,
+          "probability": 0.8952361345291138
+        },
+        {
+          "word": " gotten",
+          "start": 41.58,
+          "end": 41.78,
+          "probability": 0.34366387128829956
+        },
+        {
+          "word": " to",
+          "start": 41.78,
+          "end": 42.9,
+          "probability": 0.9817566871643066
+        },
+        {
+          "word": " this",
+          "start": 42.9,
+          "end": 43.22,
+          "probability": 0.9971219897270203
+        },
+        {
+          "word": " committee.",
+          "start": 43.22,
+          "end": 43.54,
+          "probability": 0.9624871611595154
+        },
+        {
+          "word": " We",
+          "start": 44.06,
+          "end": 44.32,
+          "probability": 0.9923564195632935
+        },
+        {
+          "word": " would",
+          "start": 44.32,
+          "end": 44.44,
+          "probability": 0.9878465533256531
+        },
+        {
+          "word": " also",
+          "start": 44.44,
+          "end": 44.62,
+          "probability": 0.9964625239372253
+        },
+        {
+          "word": " like",
+          "start": 44.62,
+          "end": 44.84,
+          "probability": 0.9983626008033752
+        },
+        {
+          "word": " to",
+          "start": 44.84,
+          "end": 44.98,
+          "probability": 0.9990271329879761
+        },
+        {
+          "word": " reiterate",
+          "start": 44.98,
+          "end": 45.22,
+          "probability": 0.997819185256958
+        },
+        {
+          "word": " the",
+          "start": 45.22,
+          "end": 45.46,
+          "probability": 0.9973391890525818
+        },
+        {
+          "word": " position",
+          "start": 45.46,
+          "end": 45.84,
+          "probability": 0.9974135756492615
+        },
+        {
+          "word": " of",
+          "start": 45.84,
+          "end": 46.2,
+          "probability": 0.998258650302887
+        },
+        {
+          "word": " the",
+          "start": 46.2,
+          "end": 46.28,
+          "probability": 0.9883865714073181
+        },
+        {
+          "word": " Secretary",
+          "start": 46.28,
+          "end": 46.58,
+          "probability": 0.9681959748268127
+        },
+        {
+          "word": " of",
+          "start": 46.58,
+          "end": 46.8,
+          "probability": 0.9972525238990784
+        }
+      ]
+    },
+    {
+      "start": 46.8,
+      "end": 53.14,
+      "text": "State and other cabinet officials that was released last week. Thank you.",
+      "words": [
+        {
+          "word": " State",
+          "start": 46.8,
+          "end": 47.02,
+          "probability": 0.9868942499160767
+        },
+        {
+          "word": " and",
+          "start": 47.02,
+          "end": 48.12,
+          "probability": 0.9925906658172607
+        },
+        {
+          "word": " other",
+          "start": 48.12,
+          "end": 48.44,
+          "probability": 0.9979113936424255
+        },
+        {
+          "word": " cabinet",
+          "start": 48.44,
+          "end": 48.72,
+          "probability": 0.7622320652008057
+        },
+        {
+          "word": " officials",
+          "start": 48.72,
+          "end": 49.16,
+          "probability": 0.9978753328323364
+        },
+        {
+          "word": " that",
+          "start": 49.16,
+          "end": 49.8,
+          "probability": 0.9627824425697327
+        },
+        {
+          "word": " was",
+          "start": 49.8,
+          "end": 50.16,
+          "probability": 0.995799720287323
+        },
+        {
+          "word": " released",
+          "start": 50.16,
+          "end": 50.54,
+          "probability": 0.9920319318771362
+        },
+        {
+          "word": " last",
+          "start": 50.54,
+          "end": 51.48,
+          "probability": 0.9959307312965393
+        },
+        {
+          "word": " week.",
+          "start": 51.48,
+          "end": 51.86,
+          "probability": 0.9978500604629517
+        },
+        {
+          "word": " Thank",
+          "start": 52.52,
+          "end": 52.98,
+          "probability": 0.9907141923904419
+        },
+        {
+          "word": " you.",
+          "start": 52.98,
+          "end": 53.14,
+          "probability": 0.987321674823761
+        }
+      ]
+    },
+    {
+      "start": 54.1,
+      "end": 55.5,
+      "text": "Thank you United States.",
+      "words": [
+        {
+          "word": " Thank",
+          "start": 54.06,
+          "end": 54.5,
+          "probability": 0.5269065499305725
+        },
+        {
+          "word": " you",
+          "start": 54.5,
+          "end": 54.7,
+          "probability": 0.9509405493736267
+        },
+        {
+          "word": " United",
+          "start": 54.7,
+          "end": 55.0,
+          "probability": 0.018819844350218773
+        },
+        {
+          "word": " States.",
+          "start": 55.0,
+          "end": 55.5,
+          "probability": 0.27542558312416077
+        }
+      ]
+    },
+    {
+      "start": 56.06,
+      "end": 57.24,
+      "text": "Russian Federation please.",
+      "words": [
+        {
+          "word": " Russian",
+          "start": 56.06,
+          "end": 56.42,
+          "probability": 0.6651017665863037
+        },
+        {
+          "word": " Federation",
+          "start": 56.42,
+          "end": 56.7,
+          "probability": 0.2601654529571533
+        },
+        {
+          "word": " please.",
+          "start": 56.7,
+          "end": 57.24,
+          "probability": 0.32567763328552246
+        }
+      ]
+    }
+  ]
+}

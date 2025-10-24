@@ -1,0 +1,535 @@
+{
+  "text": "She said, that would get some, firstly, my apologies for keeping you in a little bit of suspense. It's the car song after my ruling day. I said I requested to do some concept. In the floor, I'm keeping your flag there. I haven't forgotten, I'm not taking your flag now until I'm here, by from the consultation, then I will give you the floor. So don't worry, it's stayed there. … … …",
+  "language": "yo",
+  "duration": 44.88,
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 4.78,
+      "text": "She said, that would get some, firstly, my apologies",
+      "words": [
+        {
+          "word": " She",
+          "start": 0.0,
+          "end": 0.0,
+          "probability": 0.0034499806351959705
+        },
+        {
+          "word": " said,",
+          "start": 0.0,
+          "end": 0.22,
+          "probability": 0.19752375781536102
+        },
+        {
+          "word": " that",
+          "start": 0.38,
+          "end": 0.46,
+          "probability": 0.02438262663781643
+        },
+        {
+          "word": " would",
+          "start": 0.46,
+          "end": 0.56,
+          "probability": 0.18271470069885254
+        },
+        {
+          "word": " get",
+          "start": 0.56,
+          "end": 0.7,
+          "probability": 0.4016053378582001
+        },
+        {
+          "word": " some,",
+          "start": 0.7,
+          "end": 1.18,
+          "probability": 0.9249186515808105
+        },
+        {
+          "word": " firstly,",
+          "start": 1.62,
+          "end": 4.14,
+          "probability": 0.5024526119232178
+        },
+        {
+          "word": " my",
+          "start": 4.28,
+          "end": 4.38,
+          "probability": 0.9497321248054504
+        },
+        {
+          "word": " apologies",
+          "start": 4.38,
+          "end": 4.78,
+          "probability": 0.9556321501731873
+        }
+      ]
+    },
+    {
+      "start": 4.78,
+      "end": 7.02,
+      "text": "for keeping you in a little bit of suspense.",
+      "words": [
+        {
+          "word": " for",
+          "start": 4.78,
+          "end": 5.24,
+          "probability": 0.9555055499076843
+        },
+        {
+          "word": " keeping",
+          "start": 5.24,
+          "end": 5.62,
+          "probability": 0.9792540073394775
+        },
+        {
+          "word": " you",
+          "start": 5.62,
+          "end": 5.86,
+          "probability": 0.9615364074707031
+        },
+        {
+          "word": " in",
+          "start": 5.86,
+          "end": 5.98,
+          "probability": 0.8248779773712158
+        },
+        {
+          "word": " a",
+          "start": 5.98,
+          "end": 6.18,
+          "probability": 0.9453186392784119
+        },
+        {
+          "word": " little",
+          "start": 6.18,
+          "end": 6.36,
+          "probability": 0.9934240579605103
+        },
+        {
+          "word": " bit",
+          "start": 6.36,
+          "end": 6.5,
+          "probability": 0.9802693724632263
+        },
+        {
+          "word": " of",
+          "start": 6.5,
+          "end": 6.62,
+          "probability": 0.9833515286445618
+        },
+        {
+          "word": " suspense.",
+          "start": 6.62,
+          "end": 7.02,
+          "probability": 0.9455466270446777
+        }
+      ]
+    },
+    {
+      "start": 9.58,
+      "end": 12.96,
+      "text": "It's the car song after my ruling day.",
+      "words": [
+        {
+          "word": " It's",
+          "start": 9.58,
+          "end": 9.98,
+          "probability": 0.8745532631874084
+        },
+        {
+          "word": " the",
+          "start": 9.98,
+          "end": 10.06,
+          "probability": 0.6571265459060669
+        },
+        {
+          "word": " car",
+          "start": 10.06,
+          "end": 10.28,
+          "probability": 0.020225876942276955
+        },
+        {
+          "word": " song",
+          "start": 10.28,
+          "end": 10.7,
+          "probability": 0.7758485674858093
+        },
+        {
+          "word": " after",
+          "start": 10.7,
+          "end": 11.48,
+          "probability": 0.5292702913284302
+        },
+        {
+          "word": " my",
+          "start": 11.48,
+          "end": 11.84,
+          "probability": 0.9701681137084961
+        },
+        {
+          "word": " ruling",
+          "start": 11.84,
+          "end": 12.52,
+          "probability": 0.5855804085731506
+        },
+        {
+          "word": " day.",
+          "start": 12.52,
+          "end": 12.96,
+          "probability": 0.5721568465232849
+        }
+      ]
+    },
+    {
+      "start": 15.3,
+      "end": 17.0,
+      "text": "I said I requested to do some concept.",
+      "words": [
+        {
+          "word": " I",
+          "start": 15.3,
+          "end": 15.56,
+          "probability": 0.2248615175485611
+        },
+        {
+          "word": " said",
+          "start": 15.56,
+          "end": 15.76,
+          "probability": 0.3886125087738037
+        },
+        {
+          "word": " I",
+          "start": 15.76,
+          "end": 15.92,
+          "probability": 0.2470141053199768
+        },
+        {
+          "word": " requested",
+          "start": 15.92,
+          "end": 16.22,
+          "probability": 0.4443524479866028
+        },
+        {
+          "word": " to",
+          "start": 16.22,
+          "end": 16.5,
+          "probability": 0.8264563679695129
+        },
+        {
+          "word": " do",
+          "start": 16.5,
+          "end": 16.6,
+          "probability": 0.9708129167556763
+        },
+        {
+          "word": " some",
+          "start": 16.6,
+          "end": 16.78,
+          "probability": 0.8942634463310242
+        },
+        {
+          "word": " concept.",
+          "start": 16.78,
+          "end": 17.0,
+          "probability": 0.0635228157043457
+        }
+      ]
+    },
+    {
+      "start": 17.08,
+      "end": 18.74,
+      "text": "In the floor, I'm keeping your flag there.",
+      "words": [
+        {
+          "word": " In",
+          "start": 17.08,
+          "end": 17.16,
+          "probability": 0.18385010957717896
+        },
+        {
+          "word": " the",
+          "start": 17.16,
+          "end": 17.24,
+          "probability": 0.9929686188697815
+        },
+        {
+          "word": " floor,",
+          "start": 17.24,
+          "end": 17.5,
+          "probability": 0.8967864513397217
+        },
+        {
+          "word": " I'm",
+          "start": 17.68,
+          "end": 17.82,
+          "probability": 0.986853837966919
+        },
+        {
+          "word": " keeping",
+          "start": 17.82,
+          "end": 17.96,
+          "probability": 0.9978249073028564
+        },
+        {
+          "word": " your",
+          "start": 17.96,
+          "end": 18.2,
+          "probability": 0.9222389459609985
+        },
+        {
+          "word": " flag",
+          "start": 18.2,
+          "end": 18.42,
+          "probability": 0.9734576940536499
+        },
+        {
+          "word": " there.",
+          "start": 18.42,
+          "end": 18.74,
+          "probability": 0.8413190245628357
+        }
+      ]
+    },
+    {
+      "start": 19.44,
+      "end": 22.98,
+      "text": "I haven't forgotten, I'm not taking your flag now",
+      "words": [
+        {
+          "word": " I",
+          "start": 19.44,
+          "end": 19.6,
+          "probability": 0.9536235928535461
+        },
+        {
+          "word": " haven't",
+          "start": 19.6,
+          "end": 19.8,
+          "probability": 0.9945165514945984
+        },
+        {
+          "word": " forgotten,",
+          "start": 19.8,
+          "end": 20.16,
+          "probability": 0.9308969974517822
+        },
+        {
+          "word": " I'm",
+          "start": 20.84,
+          "end": 21.14,
+          "probability": 0.5518776029348373
+        },
+        {
+          "word": " not",
+          "start": 21.14,
+          "end": 21.26,
+          "probability": 0.9927588701248169
+        },
+        {
+          "word": " taking",
+          "start": 21.26,
+          "end": 22.18,
+          "probability": 0.9520020484924316
+        },
+        {
+          "word": " your",
+          "start": 22.18,
+          "end": 22.42,
+          "probability": 0.8847087025642395
+        },
+        {
+          "word": " flag",
+          "start": 22.42,
+          "end": 22.68,
+          "probability": 0.9972648620605469
+        },
+        {
+          "word": " now",
+          "start": 22.68,
+          "end": 22.98,
+          "probability": 0.8473459482192993
+        }
+      ]
+    },
+    {
+      "start": 22.98,
+      "end": 25.64,
+      "text": "until I'm here, by from the consultation,",
+      "words": [
+        {
+          "word": " until",
+          "start": 22.98,
+          "end": 23.4,
+          "probability": 0.8183582425117493
+        },
+        {
+          "word": " I'm",
+          "start": 23.4,
+          "end": 23.92,
+          "probability": 0.7776842713356018
+        },
+        {
+          "word": " here,",
+          "start": 23.92,
+          "end": 24.84,
+          "probability": 0.9681074023246765
+        },
+        {
+          "word": " by",
+          "start": 24.96,
+          "end": 25.04,
+          "probability": 0.35715365409851074
+        },
+        {
+          "word": " from",
+          "start": 25.04,
+          "end": 25.2,
+          "probability": 0.34502673149108887
+        },
+        {
+          "word": " the",
+          "start": 25.2,
+          "end": 25.28,
+          "probability": 0.9951051473617554
+        },
+        {
+          "word": " consultation,",
+          "start": 25.28,
+          "end": 25.64,
+          "probability": 0.5470183491706848
+        }
+      ]
+    },
+    {
+      "start": 25.84,
+      "end": 26.58,
+      "text": "then I will give you the floor.",
+      "words": [
+        {
+          "word": " then",
+          "start": 25.84,
+          "end": 25.9,
+          "probability": 0.8915619850158691
+        },
+        {
+          "word": " I",
+          "start": 25.9,
+          "end": 26.02,
+          "probability": 0.9808567762374878
+        },
+        {
+          "word": " will",
+          "start": 26.02,
+          "end": 26.08,
+          "probability": 0.7231855392456055
+        },
+        {
+          "word": " give",
+          "start": 26.08,
+          "end": 26.2,
+          "probability": 0.9881604909896851
+        },
+        {
+          "word": " you",
+          "start": 26.2,
+          "end": 26.32,
+          "probability": 0.9846153855323792
+        },
+        {
+          "word": " the",
+          "start": 26.32,
+          "end": 26.42,
+          "probability": 0.9968221187591553
+        },
+        {
+          "word": " floor.",
+          "start": 26.42,
+          "end": 26.58,
+          "probability": 0.8851001858711243
+        }
+      ]
+    },
+    {
+      "start": 26.68,
+      "end": 27.9,
+      "text": "So don't worry, it's stayed there.",
+      "words": [
+        {
+          "word": " So",
+          "start": 26.68,
+          "end": 26.74,
+          "probability": 0.9791700839996338
+        },
+        {
+          "word": " don't",
+          "start": 26.74,
+          "end": 26.9,
+          "probability": 0.9651092290878296
+        },
+        {
+          "word": " worry,",
+          "start": 26.9,
+          "end": 27.12,
+          "probability": 0.9992252588272095
+        },
+        {
+          "word": " it's",
+          "start": 27.4,
+          "end": 27.6,
+          "probability": 0.837736040353775
+        },
+        {
+          "word": " stayed",
+          "start": 27.6,
+          "end": 27.72,
+          "probability": 0.030470531433820724
+        },
+        {
+          "word": " there.",
+          "start": 27.72,
+          "end": 27.9,
+          "probability": 0.9788236618041992
+        }
+      ]
+    },
+    {
+      "start": 44.8,
+      "end": 44.84,
+      "text": "…",
+      "words": [
+        {
+          "word": " …",
+          "start": 44.8,
+          "end": 44.84,
+          "probability": 0.029840335249900818
+        }
+      ]
+    },
+    {
+      "start": 44.84,
+      "end": 44.86,
+      "text": "…",
+      "words": [
+        {
+          "word": " …",
+          "start": 44.84,
+          "end": 44.86,
+          "probability": 0.017416946589946747
+        }
+      ]
+    },
+    {
+      "start": 44.86,
+      "end": 44.88,
+      "text": "…",
+      "words": [
+        {
+          "word": " …",
+          "start": 44.86,
+          "end": 44.88,
+          "probability": 0.39184311032295227
+        }
+      ]
+    }
+  ]
+}
