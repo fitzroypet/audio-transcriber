@@ -122,6 +122,64 @@ main {
     font-size: 0.9rem;
 }
 
+/* Language toggle */
+.language-toggle {
+    margin: 18px 0;
+    text-align: left;
+}
+
+.toggle-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.toggle-options {
+    display: inline-flex;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.toggle-option {
+    display: flex;
+    cursor: pointer;
+}
+
+.toggle-option input[type="radio"] {
+    display: none;
+}
+
+.toggle-btn {
+    padding: 8px 18px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #666;
+    background: white;
+    transition: all 0.2s ease;
+    border-right: 1px solid #ddd;
+    user-select: none;
+}
+
+.toggle-option:last-child .toggle-btn {
+    border-right: none;
+}
+
+.toggle-option input[type="radio"]:checked + .toggle-btn {
+    background: #667eea;
+    color: white;
+}
+
+.toggle-hint {
+    margin-top: 6px;
+    font-size: 0.82rem;
+    color: #888;
+}
+
 /* Buttons */
 .btn {
     padding: 12px 24px;
@@ -171,13 +229,27 @@ main {
     text-align: center;
 }
 
+.progress-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.progress-percent {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #667eea;
+    min-width: 36px;
+    text-align: right;
+}
+
 .progress-bar {
-    width: 100%;
+    flex: 1;
     height: 20px;
     background: #e9ecef;
     border-radius: 10px;
     overflow: hidden;
-    margin: 20px 0;
 }
 
 .progress-fill {
@@ -278,8 +350,15 @@ footer {
 }
 
 .help h4 {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     text-align: center;
+}
+
+.help p {
+    text-align: center;
+    opacity: 0.9;
+    font-size: 0.95rem;
+    margin-bottom: 6px;
 }
 
 .help ol {
@@ -321,6 +400,20 @@ footer {
     .features {
         grid-template-columns: 1fr;
     }
+}
+
+/* Embed mode — hides chrome when opened as a popup */
+body.embed-mode header,
+body.embed-mode footer {
+    display: none;
+}
+
+body.embed-mode .container {
+    padding: 10px;
+}
+
+body.embed-mode main {
+    margin-bottom: 10px;
 }
 
 /* Animations */

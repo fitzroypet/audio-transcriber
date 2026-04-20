@@ -2,6 +2,7 @@ import os
 import uuid
 import subprocess
 import tempfile
+import shutil
 from typing import Optional, Tuple, List
 import logging
 
@@ -87,13 +88,15 @@ class AudioProcessor:
             chunk_filename = f"chunk_{chunk_index:04d}.wav"
             chunk_path = os.path.join(temp_dir, chunk_filename)
             
-            # Extract chunk using ffmpeg
+            # Extract chunk using ffmpeg, transcoding to PCM WAV for Whisper compatibility
             cmd = [
                 "ffmpeg", "-i", file_path,
                 "-ss", str(start_time),
                 "-t", str(end_time - start_time),
-                "-c", "copy",  # Copy without re-encoding for speed
-                "-y",  # Overwrite output file
+                "-acodec", "pcm_s16le",
+                "-ar", "16000",
+                "-ac", "1",
+                "-y",
                 chunk_path
             ]
             
@@ -107,11 +110,18 @@ class AudioProcessor:
                 for chunk_path, _, _ in chunks:
                     if os.path.exists(chunk_path):
                         os.remove(chunk_path)
-                os.rmdir(temp_dir)
+                shutil.rmtree(temp_dir, ignore_errors=True)
                 raise
             
-            # Move to next chunk with overlap
-            start_time = end_time - overlap_seconds
+            if end_time >= duration:
+                break
+
+            # Move to the next chunk while guaranteeing forward progress.
+            next_start = end_time - overlap_seconds
+            if next_start <= start_time:
+                next_start = end_time
+
+            start_time = next_start
             chunk_index += 1
         
         logger.info(f"Split audio into {len(chunks)} chunks")
@@ -130,7 +140,7 @@ class AudioProcessor:
         try:
             temp_dir = os.path.dirname(chunk_paths[0]) if chunk_paths else None
             if temp_dir and os.path.exists(temp_dir):
-                os.rmdir(temp_dir)
+                shutil.rmtree(temp_dir, ignore_errors=True)
         except Exception as e:
             logger.warning(f"Failed to cleanup temp directory: {str(e)}")
     

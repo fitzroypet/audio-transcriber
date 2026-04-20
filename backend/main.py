@@ -1,7 +1,7 @@
 import os
 import logging
 from typing import Optional
-from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks
+from fastapi import FastAPI, File, Form, UploadFile, HTTPException
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -74,8 +74,8 @@ async def root():
 
 @app.post("/upload", response_model=TranscriptionResponse)
 async def upload_file(
-    background_tasks: BackgroundTasks,
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+    language_mode: str = Form("en"),
 ):
     """Upload an audio file and start transcription."""
     try:
@@ -83,28 +83,43 @@ async def upload_file(
         is_valid, error_msg = audio_processor.validate_file(file.filename, file.size)
         if not is_valid:
             raise HTTPException(status_code=400, detail=error_msg)
-        
+
         # Stream file to disk instead of loading into memory
         file_path = await audio_processor.save_uploaded_file_streaming(file)
-        
+
         # Convert to WAV if needed
         wav_path = audio_processor.convert_to_wav(file_path)
-        
+
+        # English-only mode: deterministic decode, no language confusion.
+        # Auto mode: slight temperature for multilingual flexibility.
+        if language_mode == "en":
+            language = "en"
+            temperature = 0.0
+        else:
+            language = None  # Whisper auto-detects
+            temperature = 0.2
+
         # Get configuration for transcription
         config = {
             "enable_word_timestamps": os.getenv("ENABLE_WORD_TIMESTAMPS", "auto"),
             "word_timestamp_max_duration": int(os.getenv("WORD_TIMESTAMP_MAX_DURATION", "30")),
             "audio_chunk_length_minutes": int(os.getenv("AUDIO_CHUNK_LENGTH_MINUTES", "10")),
-            "chunk_overlap_seconds": int(os.getenv("CHUNK_OVERLAP_SECONDS", "5"))
+            "chunk_overlap_seconds": int(os.getenv("CHUNK_OVERLAP_SECONDS", "5")),
+            "language": language,
+            "temperature": temperature,
+            "beam_size": int(os.getenv("WHISPER_BEAM_SIZE", "5")),
         }
         
         # Start transcription with config
-        job_id = transcriber.start_transcription(wav_path, config)
-        
-        # Schedule cleanup
-        background_tasks.add_task(audio_processor.cleanup_file, file_path)
+        cleanup_paths = [file_path]
         if wav_path != file_path:
-            background_tasks.add_task(audio_processor.cleanup_file, wav_path)
+            cleanup_paths.append(wav_path)
+
+        job_id = transcriber.start_transcription(
+            wav_path,
+            config,
+            cleanup_paths=cleanup_paths
+        )
         
         return TranscriptionResponse(
             job_id=job_id,

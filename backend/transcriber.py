@@ -1,7 +1,8 @@
 import os
 import json
 import uuid
-import asyncio
+import threading
+import shutil
 from typing import Dict, Any, Optional, List, Tuple
 import whisper
 from whisper.utils import format_timestamp
@@ -12,11 +13,19 @@ logger = logging.getLogger(__name__)
 
 
 class TranscriptionJob:
-    def __init__(self, job_id: str, file_path: str, model_name: str = "base", config: Optional[Dict] = None):
+    def __init__(
+        self,
+        job_id: str,
+        file_path: str,
+        model_name: str = "base",
+        config: Optional[Dict] = None,
+        cleanup_paths: Optional[List[str]] = None
+    ):
         self.job_id = job_id
         self.file_path = file_path
         self.model_name = model_name
         self.config = config or {}
+        self.cleanup_paths = cleanup_paths or []
         self.status = "pending"
         self.progress = 0.0
         self.error_message = None
@@ -45,31 +54,52 @@ class WhisperTranscriber:
         self.config = config or {}
         self.model = None
         self.jobs: Dict[str, TranscriptionJob] = {}
+        self._model_lock = threading.Lock()
         
         # Ensure results directory exists
         os.makedirs(results_dir, exist_ok=True)
     
     def load_model(self):
         """Load the Whisper model (lazy loading)."""
-        if self.model is None:
-            logger.info(f"Loading Whisper model: {self.model_name}")
-            self.model = whisper.load_model(self.model_name)
-            logger.info("Whisper model loaded successfully")
+        if self.model is not None:
+            return
+
+        with self._model_lock:
+            if self.model is None:
+                logger.info(f"Loading Whisper model: {self.model_name}")
+                self.model = whisper.load_model(self.model_name)
+                logger.info("Whisper model loaded successfully")
     
-    def start_transcription(self, file_path: str, config: Optional[Dict] = None) -> str:
+    def start_transcription(
+        self,
+        file_path: str,
+        config: Optional[Dict] = None,
+        cleanup_paths: Optional[List[str]] = None
+    ) -> str:
         """Start a new transcription job and return job ID."""
         job_id = str(uuid.uuid4())
         job_config = {**self.config, **(config or {})}
-        job = TranscriptionJob(job_id, file_path, self.model_name, job_config)
+        job = TranscriptionJob(
+            job_id,
+            file_path,
+            self.model_name,
+            job_config,
+            cleanup_paths=cleanup_paths
+        )
         self.jobs[job_id] = job
         
-        # Start transcription in background
-        asyncio.create_task(self._transcribe_async(job_id))
+        # Run the Whisper work in a background thread so /upload can respond immediately.
+        worker = threading.Thread(
+            target=self._transcribe_job,
+            args=(job_id,),
+            daemon=True
+        )
+        worker.start()
         
         return job_id
     
-    async def _transcribe_async(self, job_id: str):
-        """Run transcription asynchronously."""
+    def _transcribe_job(self, job_id: str):
+        """Run transcription work in a background thread."""
         job = self.jobs[job_id]
         
         try:
@@ -84,20 +114,30 @@ class WhisperTranscriber:
             from .audio_processor import AudioProcessor
             audio_processor = AudioProcessor()
             duration = audio_processor.get_audio_duration(job.file_path)
-            
+
+            if duration <= 0:
+                raise ValueError(
+                    "Could not read audio data from the file. "
+                    "The file may be corrupted or in an unsupported encoding."
+                )
+
             # Determine if we should use word timestamps
             use_word_timestamps = self._should_use_word_timestamps(duration, job.config)
             
             if self._should_use_chunking(duration, job.config):
                 logger.info(f"Using chunked processing for {duration:.1f}s audio file")
-                result = await self._transcribe_chunked(job, use_word_timestamps)
+                result = self._transcribe_chunked(job, use_word_timestamps)
             else:
                 logger.info(f"Using standard processing for {duration:.1f}s audio file")
-                result = self.model.transcribe(
-                    job.file_path,
+                transcribe_kwargs = dict(
                     verbose=True,
-                    word_timestamps=use_word_timestamps
+                    word_timestamps=use_word_timestamps,
+                    temperature=job.config.get("temperature", 0),
+                    beam_size=job.config.get("beam_size", 5),
                 )
+                if job.config.get("language"):
+                    transcribe_kwargs["language"] = job.config["language"]
+                result = self.model.transcribe(job.file_path, **transcribe_kwargs)
             
             job.progress = 0.9
             
@@ -118,6 +158,13 @@ class WhisperTranscriber:
             job.status = "failed"
             job.error_message = str(e)
             job.completed_at = datetime.now()
+        finally:
+            for cleanup_path in set(job.cleanup_paths):
+                if cleanup_path and os.path.exists(cleanup_path):
+                    try:
+                        os.remove(cleanup_path)
+                    except OSError as e:
+                        logger.warning(f"Failed to cleanup file {cleanup_path}: {str(e)}")
     
     def _should_use_word_timestamps(self, duration: float, config: Dict) -> bool:
         """Determine if word timestamps should be used based on duration and config."""
@@ -137,7 +184,7 @@ class WhisperTranscriber:
         # Use chunking if file is longer than chunk length
         return duration > chunk_length
     
-    async def _transcribe_chunked(self, job: TranscriptionJob, use_word_timestamps: bool) -> Dict[str, Any]:
+    def _transcribe_chunked(self, job: TranscriptionJob, use_word_timestamps: bool) -> Dict[str, Any]:
         """Transcribe audio file in chunks and merge results."""
         from .audio_processor import AudioProcessor
         
@@ -165,11 +212,15 @@ class WhisperTranscriber:
                 job.progress = 0.2 + (0.6 * i / total_chunks)
                 
                 # Transcribe chunk
-                chunk_result = self.model.transcribe(
-                    chunk_path,
-                    verbose=False,  # Reduce verbosity for chunks
-                    word_timestamps=use_word_timestamps
+                transcribe_kwargs = dict(
+                    verbose=False,
+                    word_timestamps=use_word_timestamps,
+                    temperature=job.config.get("temperature", 0),
+                    beam_size=job.config.get("beam_size", 5),
                 )
+                if job.config.get("language"):
+                    transcribe_kwargs["language"] = job.config["language"]
+                chunk_result = self.model.transcribe(chunk_path, **transcribe_kwargs)
                 
                 # Store chunk result with timing info
                 chunk_results.append({
@@ -188,10 +239,7 @@ class WhisperTranscriber:
             # Clean up temp directory
             if chunks:
                 temp_dir = os.path.dirname(chunks[0][0])
-                try:
-                    os.rmdir(temp_dir)
-                except Exception as e:
-                    logger.warning(f"Failed to cleanup temp directory: {str(e)}")
+                shutil.rmtree(temp_dir, ignore_errors=True)
             
             # Merge chunk results
             merged_result = self._merge_chunk_results(chunk_results, overlap)

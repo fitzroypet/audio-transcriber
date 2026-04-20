@@ -1,9 +1,13 @@
 class AudioTranscriber {
     constructor() {
+        this.allowedTypes = ['.mp3', '.wav', '.m4a', '.aac', '.ogg', '.flac', '.wma'];
+        this.maxFileSizeMb = 500;
+        this.maxFileSizeBytes = this.maxFileSizeMb * 1024 * 1024;
         this.currentJobId = null;
         this.pollInterval = null;
         this.initializeElements();
         this.setupEventListeners();
+        this.loadServerConfig();
     }
 
     initializeElements() {
@@ -19,6 +23,7 @@ class AudioTranscriber {
         this.progressSection = document.getElementById('progressSection');
         this.progressFill = document.getElementById('progressFill');
         this.progressText = document.getElementById('progressText');
+        this.progressPercent = document.getElementById('progressPercent');
 
         // Results elements
         this.resultsSection = document.getElementById('resultsSection');
@@ -47,12 +52,45 @@ class AudioTranscriber {
         this.newTranscriptionBtn.addEventListener('click', this.resetApp.bind(this));
         this.tryAgainBtn.addEventListener('click', this.resetApp.bind(this));
 
+        // Language toggle hint
+        document.querySelectorAll('input[name="languageMode"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                const hint = document.getElementById('toggleHint');
+                if (hint) {
+                    hint.textContent = radio.value === 'en'
+                        ? 'Best accuracy for English-language meetings'
+                        : 'Use when speakers switch between languages';
+                }
+            });
+        });
+
         // Download button events
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('btn-download')) {
                 this.downloadResult(e.target.dataset.format);
             }
         });
+    }
+
+    async loadServerConfig() {
+        try {
+            const response = await fetch('/formats');
+            if (!response.ok) return;
+
+            const config = await response.json();
+
+            if (Array.isArray(config.audio_formats) && config.audio_formats.length > 0) {
+                this.allowedTypes = config.audio_formats.map((format) => format.toLowerCase());
+                this.fileInput.accept = this.allowedTypes.join(',');
+            }
+
+            if (Number.isFinite(config.max_file_size_mb) && config.max_file_size_mb > 0) {
+                this.maxFileSizeMb = config.max_file_size_mb;
+                this.maxFileSizeBytes = this.maxFileSizeMb * 1024 * 1024;
+            }
+        } catch (error) {
+            console.warn('Failed to load server config', error);
+        }
     }
 
     handleDragOver(e) {
@@ -83,19 +121,15 @@ class AudioTranscriber {
     }
 
     processFile(file) {
-        // Validate file type
-        const allowedTypes = ['.mp3', '.wav', '.m4a', '.aac', '.ogg', '.flac', '.wma'];
         const fileExt = '.' + file.name.split('.').pop().toLowerCase();
         
-        if (!allowedTypes.includes(fileExt)) {
-            this.showError(`Unsupported file type: ${fileExt}. Supported formats: ${allowedTypes.join(', ')}`);
+        if (!this.allowedTypes.includes(fileExt)) {
+            this.showError(`Unsupported file type: ${fileExt}. Supported formats: ${this.allowedTypes.join(', ')}`);
             return;
         }
 
-        // Validate file size (500MB limit)
-        const maxSize = 500 * 1024 * 1024; // 500MB in bytes
-        if (file.size > maxSize) {
-            this.showError('File too large. Maximum size is 500MB.');
+        if (file.size > this.maxFileSizeBytes) {
+            this.showError(`File too large. Maximum size is ${this.maxFileSizeMb}MB.`);
             return;
         }
 
@@ -118,6 +152,8 @@ class AudioTranscriber {
             // Create form data
             const formData = new FormData();
             formData.append('file', this.selectedFile);
+            const selectedMode = document.querySelector('input[name="languageMode"]:checked');
+            formData.append('language_mode', selectedMode ? selectedMode.value : 'en');
 
             // Upload file
             const response = await fetch('/upload', {
@@ -177,10 +213,12 @@ class AudioTranscriber {
         this.progressSection.style.display = 'block';
         this.progressText.textContent = message;
         this.progressFill.style.width = '0%';
+        this.progressPercent.textContent = '0%';
     }
 
     updateProgress(percent, message) {
         this.progressFill.style.width = `${percent}%`;
+        this.progressPercent.textContent = `${percent}%`;
         this.progressText.textContent = message;
     }
 
@@ -268,5 +306,8 @@ class AudioTranscriber {
 
 // Initialize the application when the page loads
 document.addEventListener('DOMContentLoaded', () => {
+    if (new URLSearchParams(window.location.search).get('embed') === 'true') {
+        document.body.classList.add('embed-mode');
+    }
     new AudioTranscriber();
 });

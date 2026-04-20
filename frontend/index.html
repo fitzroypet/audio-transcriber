@@ -10,7 +10,7 @@
     <div class="container">
         <header>
             <h1>🎵 Audio Transcriber</h1>
-            <p>Transcribe your audio files using AI - Private, Local, Fast</p>
+            <p>Transcribe meeting recordings using AI — Private, Local</p>
         </header>
 
         <main>
@@ -30,6 +30,22 @@
                         <span class="file-name" id="fileName"></span>
                         <span class="file-size" id="fileSize"></span>
                     </div>
+
+                    <div class="language-toggle">
+                        <span class="toggle-label">Language</span>
+                        <div class="toggle-options">
+                            <label class="toggle-option">
+                                <input type="radio" name="languageMode" value="en" checked>
+                                <span class="toggle-btn">English only</span>
+                            </label>
+                            <label class="toggle-option">
+                                <input type="radio" name="languageMode" value="auto">
+                                <span class="toggle-btn">Auto-detect</span>
+                            </label>
+                        </div>
+                        <p class="toggle-hint" id="toggleHint">Best accuracy for English-language meetings</p>
+                    </div>
+
                     <button class="btn btn-primary" id="startTranscription">Start Transcription</button>
                 </div>
             </section>
@@ -37,8 +53,11 @@
             <!-- Progress Section -->
             <section class="progress-section" id="progressSection" style="display: none;">
                 <h3>Transcribing Audio...</h3>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
+                <div class="progress-bar-row">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span class="progress-percent" id="progressPercent">0%</span>
                 </div>
                 <p class="progress-text" id="progressText">Initializing...</p>
             </section>
@@ -74,25 +93,26 @@
             <div class="features">
                 <div class="feature">
                     <h4>🔒 Private</h4>
-                    <p>All processing happens locally on your machine</p>
+                    <p>All processing happens locally — your recordings never leave your machine</p>
                 </div>
                 <div class="feature">
-                    <h4>⚡ Fast</h4>
-                    <p>Optimized for speed with high-quality results</p>
+                    <h4>🌍 Multilingual</h4>
+                    <p>Force English for accuracy, or auto-detect for meetings with mixed languages</p>
                 </div>
                 <div class="feature">
-                    <h4>📱 Apple Notes Ready</h4>
-                    <p>Perfect for transcribing recordings from Apple Notes</p>
+                    <h4>⏱ Long recordings</h4>
+                    <p>Handles hour-long meetings by splitting and merging automatically</p>
                 </div>
             </div>
-            
+
             <div class="help">
-                <h4>How to use with Apple Notes:</h4>
+                <h4>Supported formats</h4>
+                <p>MP3, WAV, M4A, AAC, OGG, FLAC, WMA — up to 500 MB</p>
+                <h4 style="margin-top:14px;">Tips for best results</h4>
                 <ol>
-                    <li>Open Apple Notes and find your recording</li>
-                    <li>Tap the recording → Share → Save to Files</li>
-                    <li>Upload the saved file here</li>
-                    <li>Download your transcription!</li>
+                    <li>Use <strong>English only</strong> mode for single-language English meetings</li>
+                    <li>Use <strong>Auto-detect</strong> when speakers switch between languages</li>
+                    <li>Clean, close-mic audio produces the most accurate transcripts</li>
                 </ol>
             </div>
         </footer>
