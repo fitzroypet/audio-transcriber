@@ -153,10 +153,10 @@ class AudioTranscriber {
             const formData = new FormData();
             formData.append('file', this.selectedFile);
             const selectedMode = document.querySelector('input[name="languageMode"]:checked');
-            formData.append('language_mode', selectedMode ? selectedMode.value : 'en');
+            const languageMode = selectedMode ? selectedMode.value : 'en';
 
             // Upload file
-            const response = await fetch('/upload', {
+            const response = await fetch(`/upload?language_mode=${languageMode}`, {
                 method: 'POST',
                 body: formData
             });

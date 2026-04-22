@@ -1,7 +1,7 @@
 import os
 import logging
 from typing import Optional
-from fastapi import FastAPI, File, Form, UploadFile, HTTPException
+from fastapi import FastAPI, File, Query, UploadFile, HTTPException
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -75,7 +75,7 @@ async def root():
 @app.post("/upload", response_model=TranscriptionResponse)
 async def upload_file(
     file: UploadFile = File(...),
-    language_mode: str = Form("en"),
+    language_mode: str = Query("en"),
 ):
     """Upload an audio file and start transcription."""
     try:
