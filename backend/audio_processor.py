@@ -144,17 +144,17 @@ class AudioProcessor:
         except Exception as e:
             logger.warning(f"Failed to cleanup temp directory: {str(e)}")
     
-    def validate_file(self, filename: str, file_size: int) -> Tuple[bool, Optional[str]]:
+    def validate_file(self, filename: str, file_size: Optional[int]) -> Tuple[bool, Optional[str]]:
         """Validate uploaded audio file."""
         # Check file extension
         ext = os.path.splitext(filename.lower())[1]
         if ext not in self.supported_formats:
             return False, f"Unsupported format: {ext}. Supported formats: {', '.join(self.supported_formats)}"
-        
-        # Check file size
-        if file_size > self.max_size_bytes:
+
+        # Check file size (file_size may be None when Content-Length is not forwarded by proxy)
+        if file_size is not None and file_size > self.max_size_bytes:
             return False, f"File too large. Maximum size: {self.max_size_bytes // (1024*1024)}MB"
-        
+
         return True, None
     
     def save_uploaded_file(self, file_content: bytes, filename: str) -> str:

@@ -162,8 +162,14 @@ class AudioTranscriber {
             });
 
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.detail || 'Upload failed');
+                let detail = `Server error ${response.status}`;
+                try {
+                    const error = await response.json();
+                    detail = error.detail || error.message || error.error || JSON.stringify(error);
+                } catch (_) {
+                    detail = await response.text().catch(() => detail);
+                }
+                throw new Error(detail);
             }
 
             const result = await response.json();

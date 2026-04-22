@@ -79,6 +79,7 @@ async def upload_file(
 ):
     """Upload an audio file and start transcription."""
     try:
+        logger.info(f"Upload request: filename={file.filename!r}, size={file.size}, content_type={file.content_type}")
         # Validate file
         is_valid, error_msg = audio_processor.validate_file(file.filename, file.size)
         if not is_valid:
