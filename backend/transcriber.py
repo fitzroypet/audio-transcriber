@@ -4,8 +4,7 @@ import uuid
 import threading
 import shutil
 from typing import Dict, Any, Optional, List, Tuple
-import whisper
-from whisper.utils import format_timestamp
+from faster_whisper import WhisperModel
 import logging
 from datetime import datetime
 
@@ -67,7 +66,7 @@ class WhisperTranscriber:
         with self._model_lock:
             if self.model is None:
                 logger.info(f"Loading Whisper model: {self.model_name}")
-                self.model = whisper.load_model(self.model_name)
+                self.model = WhisperModel(self.model_name, device="cpu", compute_type="int8")
                 logger.info("Whisper model loaded successfully")
     
     def start_transcription(
@@ -130,14 +129,14 @@ class WhisperTranscriber:
             else:
                 logger.info(f"Using standard processing for {duration:.1f}s audio file")
                 transcribe_kwargs = dict(
-                    verbose=True,
                     word_timestamps=use_word_timestamps,
                     temperature=job.config.get("temperature", 0),
                     beam_size=job.config.get("beam_size", 5),
                 )
                 if job.config.get("language"):
                     transcribe_kwargs["language"] = job.config["language"]
-                result = self.model.transcribe(job.file_path, **transcribe_kwargs)
+                segments, info = self.model.transcribe(job.file_path, **transcribe_kwargs)
+                result = self._fw_to_dict(segments, info)
             
             job.progress = 0.9
             
@@ -166,6 +165,20 @@ class WhisperTranscriber:
                     except OSError as e:
                         logger.warning(f"Failed to cleanup file {cleanup_path}: {str(e)}")
     
+    def _fw_to_dict(self, segments_gen, info) -> Dict[str, Any]:
+        """Convert faster-whisper (generator, info) output to the openai-whisper dict shape."""
+        segments, text_parts = [], []
+        for seg in segments_gen:
+            text_parts.append(seg.text)
+            seg_dict = {"start": seg.start, "end": seg.end, "text": seg.text}
+            if seg.words:
+                seg_dict["words"] = [
+                    {"word": w.word, "start": w.start, "end": w.end, "probability": w.probability}
+                    for w in seg.words
+                ]
+            segments.append(seg_dict)
+        return {"text": "".join(text_parts), "language": info.language, "segments": segments}
+
     def _should_use_word_timestamps(self, duration: float, config: Dict) -> bool:
         """Determine if word timestamps should be used based on duration and config."""
         enable_word_timestamps = config.get("enable_word_timestamps", "auto")
@@ -213,14 +226,14 @@ class WhisperTranscriber:
                 
                 # Transcribe chunk
                 transcribe_kwargs = dict(
-                    verbose=False,
                     word_timestamps=use_word_timestamps,
                     temperature=job.config.get("temperature", 0),
                     beam_size=job.config.get("beam_size", 5),
                 )
                 if job.config.get("language"):
                     transcribe_kwargs["language"] = job.config["language"]
-                chunk_result = self.model.transcribe(chunk_path, **transcribe_kwargs)
+                segments, info = self.model.transcribe(chunk_path, **transcribe_kwargs)
+                chunk_result = self._fw_to_dict(segments, info)
                 
                 # Store chunk result with timing info
                 chunk_results.append({
