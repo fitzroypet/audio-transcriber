@@ -35,6 +35,7 @@ class TranscriptionStatusResponse(BaseModel):
     progress: Optional[float] = None
     error_message: Optional[str] = None
     transcription: Optional[Dict[str, Any]] = None
+    original_filename: Optional[str] = None
 
 
 class TranscriptionResult(BaseModel):

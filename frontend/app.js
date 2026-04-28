@@ -70,6 +70,12 @@ class AudioTranscriber {
                 this.downloadResult(e.target.dataset.format);
             }
         });
+
+        // Google Drive transcription
+        document.getElementById('gdriveTranscribe').addEventListener('click', () => this.startGdriveTranscription());
+        document.getElementById('gdriveUrl').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') this.startGdriveTranscription();
+        });
     }
 
     async loadServerConfig() {
@@ -193,7 +199,7 @@ class AudioTranscriber {
                     const progress = Math.round(status.progress * 100);
                     this.updateProgress(progress, 'Transcribing audio...');
                 } else if (status.status === 'completed') {
-                    this.showResults(status.transcription);
+                    this.showResults(status.transcription, status.original_filename);
                     this.stopPolling();
                 } else if (status.status === 'failed') {
                     this.showError(`Transcription failed: ${status.error_message}`);
@@ -228,11 +234,49 @@ class AudioTranscriber {
         this.progressText.textContent = message;
     }
 
-    showResults(transcription) {
+    async startGdriveTranscription() {
+        const urlInput = document.getElementById('gdriveUrl');
+        const url = urlInput.value.trim();
+        if (!url) return;
+
+        const selectedMode = document.querySelector('input[name="languageMode"]:checked');
+        const languageMode = selectedMode ? selectedMode.value : 'en';
+
+        try {
+            this.showProgress('Fetching file from Google Drive...');
+            const response = await fetch(
+                `/transcribe-gdrive?gdrive_url=${encodeURIComponent(url)}&language_mode=${languageMode}`,
+                { method: 'POST' }
+            );
+
+            if (!response.ok) {
+                let detail = `Server error ${response.status}`;
+                try { detail = (await response.json()).detail || detail; } catch (_) {}
+                throw new Error(detail);
+            }
+
+            const result = await response.json();
+            this.currentJobId = result.job_id;
+            this.showProgress('File received, transcribing...');
+            this.startPolling();
+        } catch (error) {
+            this.showError(`Google Drive error: ${error.message}`);
+        }
+    }
+
+    showResults(transcription, originalFilename) {
         this.hideAllSections();
         this.resultsSection.style.display = 'block';
         this.transcriptionPreview.textContent = transcription.text;
         this.currentTranscription = transcription;
+
+        const heading = this.resultsSection.querySelector('h3');
+        if (originalFilename) {
+            const stem = originalFilename.replace(/\.[^.]+$/, '');
+            heading.textContent = `✅ ${stem}`;
+        } else {
+            heading.textContent = 'Transcription Complete!';
+        }
     }
 
     async downloadResult(format) {
@@ -295,6 +339,8 @@ class AudioTranscriber {
         this.uploadSection.style.display = 'block';
         this.fileInfo.style.display = 'none';
         this.fileInput.value = '';
+        const gdriveInput = document.getElementById('gdriveUrl');
+        if (gdriveInput) gdriveInput.value = '';
         this.selectedFile = null;
         this.currentJobId = null;
         this.currentTranscription = null;

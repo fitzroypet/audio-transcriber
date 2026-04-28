@@ -18,13 +18,15 @@ class TranscriptionJob:
         file_path: str,
         model_name: str = "base",
         config: Optional[Dict] = None,
-        cleanup_paths: Optional[List[str]] = None
+        cleanup_paths: Optional[List[str]] = None,
+        original_filename: Optional[str] = None,
     ):
         self.job_id = job_id
         self.file_path = file_path
         self.model_name = model_name
         self.config = config or {}
         self.cleanup_paths = cleanup_paths or []
+        self.original_filename = original_filename  # original name for downloads
         self.status = "pending"
         self.progress = 0.0
         self.error_message = None
@@ -33,7 +35,7 @@ class TranscriptionJob:
         self.completed_at = None
         self.chunks = []  # For chunked processing
         self.chunk_results = []  # Store results from each chunk
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "job_id": self.job_id,
@@ -41,6 +43,7 @@ class TranscriptionJob:
             "progress": self.progress,
             "error_message": self.error_message,
             "result": self.result,
+            "original_filename": self.original_filename,
             "created_at": self.created_at.isoformat(),
             "completed_at": self.completed_at.isoformat() if self.completed_at else None
         }
@@ -73,7 +76,8 @@ class WhisperTranscriber:
         self,
         file_path: str,
         config: Optional[Dict] = None,
-        cleanup_paths: Optional[List[str]] = None
+        cleanup_paths: Optional[List[str]] = None,
+        original_filename: Optional[str] = None,
     ) -> str:
         """Start a new transcription job and return job ID."""
         job_id = str(uuid.uuid4())
@@ -83,7 +87,8 @@ class WhisperTranscriber:
             file_path,
             self.model_name,
             job_config,
-            cleanup_paths=cleanup_paths
+            cleanup_paths=cleanup_paths,
+            original_filename=original_filename,
         )
         self.jobs[job_id] = job
         

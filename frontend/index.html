@@ -33,7 +33,22 @@
                         </div>
                     </div>
 
-                    <div class="file-info" id="fileInfo" style="display: none;">
+                <!-- Google Drive URL input -->
+                <div class="gdrive-section">
+                    <div class="or-divider"><span>or paste a Google Drive link</span></div>
+                    <div class="gdrive-input-row">
+                        <input
+                            type="url"
+                            id="gdriveUrl"
+                            class="gdrive-input"
+                            placeholder="https://drive.google.com/file/d/…/view"
+                        >
+                        <button class="btn btn-gdrive" id="gdriveTranscribe">Transcribe</button>
+                    </div>
+                    <p class="gdrive-hint">File must be shared as <strong>Anyone with the link</strong></p>
+                </div>
+
+                <div class="file-info" id="fileInfo" style="display: none;">
                         <div class="file-details">
                             <span class="file-name" id="fileName"></span>
                             <span class="file-size" id="fileSize"></span>

@@ -19,6 +19,7 @@ from .audio_processor import AudioProcessor
 from .transcriber import WhisperTranscriber
 from .exporters import ExportManager
 from .websocket_handler import LiveTranscriptionSession
+from .gdrive import extract_file_id, download_gdrive_file
 
 # Load environment variables
 load_dotenv()
@@ -121,9 +122,10 @@ async def upload_file(
         job_id = transcriber.start_transcription(
             wav_path,
             config,
-            cleanup_paths=cleanup_paths
+            cleanup_paths=cleanup_paths,
+            original_filename=file.filename,
         )
-        
+
         return TranscriptionResponse(
             job_id=job_id,
             status=TranscriptionStatus.PENDING,
@@ -141,33 +143,35 @@ async def upload_file(
 async def get_transcription_status(job_id: str):
     """Get the status of a transcription job."""
     job_status = transcriber.get_job_status(job_id)
-    
+
     if job_status is None:
         raise HTTPException(status_code=404, detail="Job not found")
-    
+
     return TranscriptionStatusResponse(
         job_id=job_id,
         status=job_status["status"],
         progress=job_status["progress"],
         error_message=job_status["error_message"],
-        transcription=job_status["result"]
+        transcription=job_status["result"],
+        original_filename=job_status.get("original_filename"),
     )
 
 
 @app.get("/download/{job_id}")
 async def download_transcription(job_id: str, format: str = "json"):
     """Download transcription result in specified format."""
-    # Get transcription result
     result = transcriber.get_result(job_id)
     if result is None:
         raise HTTPException(status_code=404, detail="Transcription not found or not completed")
-    
+
     try:
-        # Export in requested format
         exported_content = ExportManager.export(result, format)
-        
-        # Generate filename
-        filename = f"transcription_{job_id}.{format}"
+
+        # Build filename from the original audio filename when available
+        job_status = transcriber.get_job_status(job_id)
+        original = (job_status or {}).get("original_filename") or ""
+        stem = os.path.splitext(original)[0].strip() if original else ""
+        filename = f"{stem}.{format}" if stem else f"transcription_{job_id}.{format}"
         
         # For large files, use streaming response
         if len(exported_content) > 10 * 1024 * 1024:  # 10MB threshold
@@ -207,6 +211,66 @@ async def download_transcription(job_id: str, format: str = "json"):
     except Exception as e:
         logger.error(f"Download failed: {str(e)}")
         raise HTTPException(status_code=500, detail="Download failed")
+
+
+@app.post("/transcribe-gdrive", response_model=TranscriptionResponse)
+async def transcribe_gdrive(
+    gdrive_url: str = Query(..., description="Google Drive sharing URL"),
+    language_mode: str = Query("en"),
+):
+    """Download a publicly-shared Google Drive audio file and start transcription."""
+    file_id = extract_file_id(gdrive_url)
+    if not file_id:
+        raise HTTPException(
+            status_code=400,
+            detail="Could not recognise a Google Drive file ID in that URL. "
+                   "Paste a 'drive.google.com/file/d/…' sharing link."
+        )
+
+    try:
+        loop = __import__('asyncio').get_event_loop()
+        file_path, original_filename = await loop.run_in_executor(
+            None, download_gdrive_file, file_id, UPLOAD_DIR
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Google Drive download failed: {e}")
+        raise HTTPException(status_code=502, detail=f"Download failed: {e}")
+
+    wav_path = audio_processor.convert_to_wav(file_path)
+
+    if language_mode == "en":
+        language, temperature = "en", 0.0
+    else:
+        language, temperature = None, 0.2
+
+    config = {
+        "enable_word_timestamps": os.getenv("ENABLE_WORD_TIMESTAMPS", "auto"),
+        "word_timestamp_max_duration": int(os.getenv("WORD_TIMESTAMP_MAX_DURATION", "30")),
+        "audio_chunk_length_minutes": int(os.getenv("AUDIO_CHUNK_LENGTH_MINUTES", "10")),
+        "chunk_overlap_seconds": int(os.getenv("CHUNK_OVERLAP_SECONDS", "5")),
+        "language": language,
+        "temperature": temperature,
+        "beam_size": int(os.getenv("WHISPER_BEAM_SIZE", "5")),
+    }
+
+    cleanup_paths = [file_path]
+    if wav_path != file_path:
+        cleanup_paths.append(wav_path)
+
+    job_id = transcriber.start_transcription(
+        wav_path,
+        config,
+        cleanup_paths=cleanup_paths,
+        original_filename=original_filename,
+    )
+
+    return TranscriptionResponse(
+        job_id=job_id,
+        status=TranscriptionStatus.PENDING,
+        message=f"Downloading and transcribing: {original_filename}",
+    )
 
 
 @app.get("/formats")
