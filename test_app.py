@@ -17,8 +17,7 @@ def test_imports():
     
     try:
         # Test individual imports
-        import pydub
-        import whisper
+        import faster_whisper
         import fastapi
         print("✅ Core dependencies imported successfully")
         
@@ -28,6 +27,9 @@ def test_imports():
         from transcriber import WhisperTranscriber
         from exporters import ExportManager
         print("✅ All backend modules imported successfully")
+
+        globals()['AudioProcessor'] = AudioProcessor
+        globals()['ExportManager'] = ExportManager
         return True
     except ImportError as e:
         print(f"❌ Import error: {e}")

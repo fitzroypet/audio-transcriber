@@ -1,20 +1,10 @@
 import os
+import json
 import uuid
 import subprocess
-import tempfile
 import shutil
 from typing import Optional, Tuple, List
 import logging
-
-try:
-    from pydub import AudioSegment
-    from pydub.utils import which
-    PYDUB_AVAILABLE = True
-except ImportError as e:
-    logging.warning(f"pydub not available: {e}. Audio processing will be limited.")
-    PYDUB_AVAILABLE = False
-    AudioSegment = None
-    which = None
 
 logger = logging.getLogger(__name__)
 
@@ -26,10 +16,6 @@ class AudioProcessor:
         self.supported_formats = {
             '.mp3', '.wav', '.m4a', '.aac', '.ogg', '.flac', '.wma'
         }
-        
-        # Check if pydub is available
-        if not PYDUB_AVAILABLE:
-            logger.warning("pydub not available. Audio processing will be limited.")
         
         # Ensure ffmpeg is available (required for chunking)
         if not self._check_ffmpeg():
@@ -194,63 +180,51 @@ class AudioProcessor:
         return file_path
     
     def convert_to_wav(self, input_path: str, output_path: Optional[str] = None) -> str:
-        """Convert audio file to WAV format for Whisper processing."""
-        if not PYDUB_AVAILABLE:
-            # If pydub is not available, just return the original file
-            # Whisper can handle most formats directly
-            logger.warning("pydub not available, using original file format")
-            return input_path
-            
+        """Convert audio file to WAV format using ffmpeg (no in-memory load)."""
         if output_path is None:
             output_path = input_path.rsplit('.', 1)[0] + '.wav'
-        
+
+        if input_path == output_path:
+            return input_path
+
+        cmd = [
+            "ffmpeg", "-i", input_path,
+            "-acodec", "pcm_s16le",
+            "-ar", "16000",
+            "-ac", "1",
+            "-y",
+            output_path,
+        ]
         try:
-            # Load audio file
-            audio = AudioSegment.from_file(input_path)
-            
-            # Convert to WAV format (16kHz, mono for better Whisper performance)
-            audio = audio.set_frame_rate(16000).set_channels(1)
-            
-            # Export as WAV
-            audio.export(output_path, format="wav")
-            
+            subprocess.run(cmd, capture_output=True, check=True)
             logger.info(f"Converted {input_path} to {output_path}")
             return output_path
-            
-        except Exception as e:
-            logger.error(f"Error converting audio file {input_path}: {str(e)}")
-            # Fallback: return original file if conversion fails
+        except subprocess.CalledProcessError as e:
+            logger.error(f"ffmpeg conversion failed for {input_path}: {e.stderr.decode()}")
             logger.warning("Conversion failed, using original file")
             return input_path
     
     def get_audio_info(self, file_path: str) -> dict:
-        """Get basic information about the audio file."""
-        if not PYDUB_AVAILABLE:
-            return {
-                "duration": None,
-                "channels": None,
-                "frame_rate": None,
-                "sample_width": None,
-                "note": "Audio info not available without pydub"
-            }
-            
+        """Get audio metadata using ffprobe."""
         try:
-            audio = AudioSegment.from_file(file_path)
+            cmd = [
+                "ffprobe", "-v", "quiet",
+                "-show_entries", "format=duration:stream=channels,sample_rate,bits_per_sample",
+                "-of", "json", file_path,
+            ]
+            result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+            data = json.loads(result.stdout)
+            fmt = data.get("format", {})
+            stream = data.get("streams", [{}])[0]
             return {
-                "duration": len(audio) / 1000.0,  # Duration in seconds
-                "channels": audio.channels,
-                "frame_rate": audio.frame_rate,
-                "sample_width": audio.sample_width
+                "duration": float(fmt.get("duration", 0)),
+                "channels": int(stream.get("channels", 0)),
+                "frame_rate": int(stream.get("sample_rate", 0)),
+                "sample_width": stream.get("bits_per_sample"),
             }
         except Exception as e:
             logger.error(f"Error getting audio info for {file_path}: {str(e)}")
-            return {
-                "duration": None,
-                "channels": None,
-                "frame_rate": None,
-                "sample_width": None,
-                "error": str(e)
-            }
+            return {"duration": None, "channels": None, "frame_rate": None, "sample_width": None, "error": str(e)}
     
     def cleanup_file(self, file_path: str) -> None:
         """Remove temporary file."""

@@ -506,6 +506,33 @@ footer {
     text-align: center;
 }
 
+.boost-control {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.boost-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+#boostLevel {
+    width: 100%;
+    cursor: pointer;
+    accent-color: #667eea;
+}
+
+.boost-hint {
+    font-size: 0.78rem;
+    color: #aaa;
+    margin-top: 5px;
+}
+
 .record-controls {
     margin: 24px 0;
 }

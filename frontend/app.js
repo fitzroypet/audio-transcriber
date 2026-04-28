@@ -367,14 +367,31 @@ class LiveRecorder {
         this.isRecording = false;
         this.ws = null;
         this.stream = null;
+        this.audioContext = null;
+        this.recordStream = null;
         this.mediaRecorder = null;
         this.chunks = [];
         this.chunkIntervalMs = 5000;
         this.chunkTimer = null;
     }
 
-    async start(languageMode = 'en') {
+    async start(languageMode = 'en', gainValue = 1.0) {
         this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        // Route through a GainNode so quiet sources (e.g. Zoom via laptop speaker)
+        // are amplified before MediaRecorder encodes them.
+        if (gainValue !== 1.0) {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const source = this.audioContext.createMediaStreamSource(this.stream);
+            const gainNode = this.audioContext.createGain();
+            gainNode.gain.value = gainValue;
+            const dest = this.audioContext.createMediaStreamDestination();
+            source.connect(gainNode);
+            gainNode.connect(dest);
+            this.recordStream = dest.stream;
+        } else {
+            this.recordStream = this.stream;
+        }
 
         const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
         const wsUrl = `${proto}//${location.host}/ws/transcribe?language_mode=${languageMode}`;
@@ -410,7 +427,7 @@ class LiveRecorder {
         if (!this.isRecording || !this.stream) return;
 
         this.chunks = [];
-        this.mediaRecorder = new MediaRecorder(this.stream);
+        this.mediaRecorder = new MediaRecorder(this.recordStream);
 
         this.mediaRecorder.ondataavailable = (e) => {
             if (e.data.size > 0) this.chunks.push(e.data);
@@ -479,10 +496,15 @@ class LiveRecorder {
             this.ws.close();
             this.ws = null;
         }
+        if (this.audioContext) {
+            this.audioContext.close();
+            this.audioContext = null;
+        }
         if (this.stream) {
             this.stream.getTracks().forEach(t => t.stop());
             this.stream = null;
         }
+        this.recordStream = null;
     }
 }
 
@@ -522,6 +544,14 @@ class LiveTranscriberUI {
         this.newRecordingBtn.addEventListener('click', () => this.resetLive());
         this.liveTryAgainBtn.addEventListener('click', () => this.resetLive());
 
+        const boostInput = document.getElementById('boostLevel');
+        const boostLabel = document.getElementById('boostLabel');
+        if (boostInput && boostLabel) {
+            boostInput.addEventListener('input', () => {
+                boostLabel.textContent = `${boostInput.value}×`;
+            });
+        }
+
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('btn-download-live')) {
                 this.downloadLiveResult(e.target.dataset.format);
@@ -532,6 +562,8 @@ class LiveTranscriberUI {
     async startRecording() {
         const selectedMode = document.querySelector('input[name="liveLanguageMode"]:checked');
         const languageMode = selectedMode ? selectedMode.value : 'en';
+        const boostEl = document.getElementById('boostLevel');
+        const gainValue = boostEl ? parseFloat(boostEl.value) : 1.0;
 
         this.accumulatedSegments = [];
         this.liveTranscriptText.textContent = '';
@@ -544,7 +576,7 @@ class LiveTranscriberUI {
         );
 
         try {
-            await this.recorder.start(languageMode);
+            await this.recorder.start(languageMode, gainValue);
         } catch (err) {
             this.showLiveError(err.message || 'Microphone access denied or not available');
             return;

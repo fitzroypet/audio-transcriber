@@ -130,6 +130,16 @@
                         </div>
                     </div>
 
+                    <!-- Volume boost for quiet sources (e.g. Zoom via laptop speaker) -->
+                    <div class="boost-control">
+                        <div class="boost-label">
+                            <span>Volume Boost</span>
+                            <span id="boostLabel">1×</span>
+                        </div>
+                        <input type="range" id="boostLevel" min="1" max="8" value="1" step="0.5">
+                        <p class="boost-hint">Raise this if recording Zoom or Teams audio through laptop speakers</p>
+                    </div>
+
                     <!-- Record controls -->
                     <div class="record-controls" id="recordControls">
                         <button class="btn btn-record" id="startRecord">

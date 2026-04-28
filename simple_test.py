@@ -18,8 +18,8 @@ def test_basic_imports():
         import fastapi
         print("✅ FastAPI imported successfully")
         
-        import whisper
-        print("✅ Whisper imported successfully")
+        import faster_whisper
+        print("✅ Faster Whisper imported successfully")
         
         from models import TranscriptionRequest, TranscriptionResponse
         print("✅ Models imported successfully")
@@ -100,7 +100,7 @@ def main():
     
     if passed == total:
         print("🎉 Basic tests passed! The application should work.")
-        print("\nNote: Audio processing features require ffmpeg and pydub.")
+        print("\nNote: Audio processing features require ffmpeg.")
         print("To start the application:")
         print("  python run.py")
     else:

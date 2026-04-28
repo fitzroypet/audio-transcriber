@@ -441,11 +441,27 @@ class WhisperTranscriber:
         adjusted by offset_seconds.
         """
         import tempfile
+        import subprocess
         self.load_model()
 
         with tempfile.NamedTemporaryFile(suffix='.webm', delete=False) as f:
             f.write(audio_bytes)
             tmp_path = f.name
+
+        # Normalise loudness so quiet sources (e.g. Zoom via laptop speaker) are
+        # amplified to a consistent level before Whisper sees them.
+        norm_path = tmp_path + '_norm.wav'
+        try:
+            subprocess.run(
+                ['ffmpeg', '-i', tmp_path,
+                 '-af', 'loudnorm',
+                 '-ar', '16000', '-ac', '1',
+                 '-y', norm_path],
+                capture_output=True, check=True
+            )
+            transcribe_path = norm_path
+        except subprocess.CalledProcessError:
+            transcribe_path = tmp_path
 
         try:
             temperature = 0.0 if language == 'en' else 0.2
@@ -457,7 +473,7 @@ class WhisperTranscriber:
             if language:
                 kwargs['language'] = language
 
-            segments_gen, info = self.model.transcribe(tmp_path, **kwargs)
+            segments_gen, info = self.model.transcribe(transcribe_path, **kwargs)
             segments = []
             for seg in segments_gen:
                 text = seg.text.strip()
@@ -469,7 +485,8 @@ class WhisperTranscriber:
                     })
             return segments, info.duration
         finally:
-            try:
-                os.remove(tmp_path)
-            except OSError:
-                pass
+            for p in (tmp_path, norm_path):
+                try:
+                    os.remove(p)
+                except OSError:
+                    pass

@@ -236,7 +236,7 @@ async def transcribe_gdrive(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error(f"Google Drive download failed: {e}")
-        raise HTTPException(status_code=502, detail=f"Download failed: {e}")
+        raise HTTPException(status_code=422, detail=f"Download failed: {e}")
 
     wav_path = audio_processor.convert_to_wav(file_path)
 
