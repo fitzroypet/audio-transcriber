@@ -106,7 +106,7 @@ class AudioTranscriber {
     handleDrop(e) {
         e.preventDefault();
         this.uploadArea.classList.remove('dragover');
-        
+
         const files = e.dataTransfer.files;
         if (files.length > 0) {
             this.processFile(files[0]);
@@ -122,7 +122,7 @@ class AudioTranscriber {
 
     processFile(file) {
         const fileExt = '.' + file.name.split('.').pop().toLowerCase();
-        
+
         if (!this.allowedTypes.includes(fileExt)) {
             this.showError(`Unsupported file type: ${fileExt}. Supported formats: ${this.allowedTypes.join(', ')}`);
             return;
@@ -148,7 +148,7 @@ class AudioTranscriber {
 
         try {
             this.showProgress('Uploading file...');
-            
+
             // Create form data
             const formData = new FormData();
             formData.append('file', this.selectedFile);
@@ -174,7 +174,7 @@ class AudioTranscriber {
 
             const result = await response.json();
             this.currentJobId = result.job_id;
-            
+
             this.showProgress('Transcription started...');
             this.startPolling();
 
@@ -240,7 +240,7 @@ class AudioTranscriber {
 
         try {
             const response = await fetch(`/download/${this.currentJobId}?format=${format}`);
-            
+
             if (!response.ok) {
                 throw new Error('Download failed');
             }
@@ -248,7 +248,7 @@ class AudioTranscriber {
             // Get filename from response headers or create default
             const contentDisposition = response.headers.get('content-disposition');
             let filename = `transcription.${format}`;
-            
+
             if (contentDisposition) {
                 const filenameMatch = contentDisposition.match(/filename="(.+)"/);
                 if (filenameMatch) {
@@ -310,10 +310,382 @@ class AudioTranscriber {
     }
 }
 
-// Initialize the application when the page loads
+
+// ── Live Recorder ──────────────────────────────────────────────────────────────
+
+class LiveRecorder {
+    constructor(onSegments, onFinal, onError) {
+        this.onSegments = onSegments;
+        this.onFinal = onFinal;
+        this.onError = onError;
+        this.isRecording = false;
+        this.ws = null;
+        this.stream = null;
+        this.mediaRecorder = null;
+        this.chunks = [];
+        this.chunkIntervalMs = 5000;
+        this.chunkTimer = null;
+    }
+
+    async start(languageMode = 'en') {
+        this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${proto}//${location.host}/ws/transcribe?language_mode=${languageMode}`;
+        this.ws = new WebSocket(wsUrl);
+
+        await new Promise((resolve, reject) => {
+            this.ws.onopen = resolve;
+            this.ws.onerror = () => reject(new Error('WebSocket connection failed'));
+        });
+
+        this.ws.onmessage = (e) => {
+            try {
+                const data = JSON.parse(e.data);
+                if (data.error) {
+                    this.onError(data.error);
+                } else if (data.is_final) {
+                    this.onFinal(data);
+                } else {
+                    this.onSegments(data);
+                }
+            } catch (err) {
+                console.error('WebSocket message parse error', err);
+            }
+        };
+
+        this.ws.onerror = () => this.onError('WebSocket error — connection lost');
+
+        this.isRecording = true;
+        this._startChunk();
+    }
+
+    _startChunk() {
+        if (!this.isRecording || !this.stream) return;
+
+        this.chunks = [];
+        this.mediaRecorder = new MediaRecorder(this.stream);
+
+        this.mediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) this.chunks.push(e.data);
+        };
+
+        this.mediaRecorder.onstop = async () => {
+            if (this.chunks.length > 0) {
+                const blob = new Blob(this.chunks, { type: this.mediaRecorder.mimeType });
+                const buf = await blob.arrayBuffer();
+                if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                    this.ws.send(buf);
+                }
+            }
+            if (this.isRecording) {
+                this._startChunk();
+            }
+        };
+
+        this.mediaRecorder.start();
+        this.chunkTimer = setTimeout(() => {
+            if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+                this.mediaRecorder.stop();
+            }
+        }, this.chunkIntervalMs);
+    }
+
+    stop() {
+        this.isRecording = false;
+
+        if (this.chunkTimer) {
+            clearTimeout(this.chunkTimer);
+            this.chunkTimer = null;
+        }
+
+        const sendDone = async () => {
+            if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                this.ws.send(JSON.stringify({ type: 'done' }));
+            }
+            if (this.stream) {
+                this.stream.getTracks().forEach(t => t.stop());
+                this.stream = null;
+            }
+        };
+
+        if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+            const origStop = this.mediaRecorder.onstop;
+            this.mediaRecorder.onstop = async () => {
+                // Send the final chunk first
+                if (this.chunks.length > 0) {
+                    const blob = new Blob(this.chunks, { type: this.mediaRecorder.mimeType });
+                    const buf = await blob.arrayBuffer();
+                    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                        this.ws.send(buf);
+                    }
+                }
+                await sendDone();
+            };
+            this.mediaRecorder.stop();
+        } else {
+            sendDone();
+        }
+    }
+
+    cleanup() {
+        if (this.ws) {
+            this.ws.close();
+            this.ws = null;
+        }
+        if (this.stream) {
+            this.stream.getTracks().forEach(t => t.stop());
+            this.stream = null;
+        }
+    }
+}
+
+
+// ── Live Transcriber UI ────────────────────────────────────────────────────────
+
+class LiveTranscriberUI {
+    constructor() {
+        this.recorder = null;
+        this.accumulatedSegments = [];
+        this.timerInterval = null;
+        this.elapsedSeconds = 0;
+        this.initElements();
+        this.setupEventListeners();
+    }
+
+    initElements() {
+        this.recordControls = document.getElementById('recordControls');
+        this.startRecordBtn = document.getElementById('startRecord');
+        this.stopRecordBtn = document.getElementById('stopRecord');
+        this.recordingStatus = document.getElementById('recordingStatus');
+        this.recordTimer = document.getElementById('recordTimer');
+        this.liveTranscript = document.getElementById('liveTranscript');
+        this.liveTranscriptText = document.getElementById('liveTranscriptText');
+        this.liveHint = document.getElementById('liveHint');
+        this.liveResults = document.getElementById('liveResults');
+        this.liveTranscriptionPreview = document.getElementById('liveTranscriptionPreview');
+        this.newRecordingBtn = document.getElementById('newRecording');
+        this.liveErrorSection = document.getElementById('liveErrorSection');
+        this.liveErrorMessage = document.getElementById('liveErrorMessage');
+        this.liveTryAgainBtn = document.getElementById('liveTryAgain');
+    }
+
+    setupEventListeners() {
+        this.startRecordBtn.addEventListener('click', () => this.startRecording());
+        this.stopRecordBtn.addEventListener('click', () => this.stopRecording());
+        this.newRecordingBtn.addEventListener('click', () => this.resetLive());
+        this.liveTryAgainBtn.addEventListener('click', () => this.resetLive());
+
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('btn-download-live')) {
+                this.downloadLiveResult(e.target.dataset.format);
+            }
+        });
+    }
+
+    async startRecording() {
+        const selectedMode = document.querySelector('input[name="liveLanguageMode"]:checked');
+        const languageMode = selectedMode ? selectedMode.value : 'en';
+
+        this.accumulatedSegments = [];
+        this.liveTranscriptText.textContent = '';
+        this.liveHint.style.display = 'block';
+
+        this.recorder = new LiveRecorder(
+            (data) => this.onSegments(data),
+            (data) => this.onFinal(data),
+            (err) => this.onError(err)
+        );
+
+        try {
+            await this.recorder.start(languageMode);
+        } catch (err) {
+            this.showLiveError(err.message || 'Microphone access denied or not available');
+            return;
+        }
+
+        // Show recording UI
+        this.startRecordBtn.style.display = 'none';
+        this.recordingStatus.style.display = 'flex';
+        this.liveTranscript.style.display = 'block';
+        this.liveResults.style.display = 'none';
+
+        // Start timer
+        this.elapsedSeconds = 0;
+        this.timerInterval = setInterval(() => {
+            this.elapsedSeconds++;
+            const m = Math.floor(this.elapsedSeconds / 60);
+            const s = this.elapsedSeconds % 60;
+            this.recordTimer.textContent = `${m}:${String(s).padStart(2, '0')}`;
+        }, 1000);
+    }
+
+    stopRecording() {
+        if (this.recorder) {
+            // Show "processing last chunk" state
+            this.stopRecordBtn.disabled = true;
+            this.stopRecordBtn.textContent = 'Finishing...';
+            this.recorder.stop();
+        }
+        this._stopTimer();
+    }
+
+    onSegments(data) {
+        if (data.segments && data.segments.length > 0) {
+            this.accumulatedSegments.push(...data.segments);
+            this.liveTranscriptText.textContent = data.full_text;
+            this.liveHint.style.display = 'none';
+            // Auto-scroll
+            this.liveTranscript.scrollTop = this.liveTranscript.scrollHeight;
+        }
+    }
+
+    onFinal(data) {
+        this.accumulatedSegments = data.segments || this.accumulatedSegments;
+        const fullText = data.full_text || '';
+
+        // Hide recording UI, show results
+        this.recordingStatus.style.display = 'none';
+        this.liveTranscript.style.display = 'none';
+        this.liveResults.style.display = 'block';
+        this.liveTranscriptionPreview.textContent = fullText || '(No speech detected)';
+
+        if (this.recorder) {
+            this.recorder.cleanup();
+            this.recorder = null;
+        }
+    }
+
+    onError(message) {
+        this._stopTimer();
+        if (this.recorder) {
+            this.recorder.cleanup();
+            this.recorder = null;
+        }
+        this.recordingStatus.style.display = 'none';
+        this.startRecordBtn.style.display = 'inline-flex';
+        this.liveTranscript.style.display = 'none';
+        this.showLiveError(message);
+    }
+
+    showLiveError(message) {
+        this.liveErrorMessage.textContent = message;
+        this.liveErrorSection.style.display = 'block';
+    }
+
+    resetLive() {
+        this._stopTimer();
+        if (this.recorder) {
+            this.recorder.cleanup();
+            this.recorder = null;
+        }
+        this.accumulatedSegments = [];
+        this.liveTranscriptText.textContent = '';
+        this.liveHint.style.display = 'block';
+        this.startRecordBtn.style.display = 'inline-flex';
+        this.startRecordBtn.disabled = false;
+        this.stopRecordBtn.disabled = false;
+        this.stopRecordBtn.textContent = 'Stop';
+        this.recordingStatus.style.display = 'none';
+        this.liveTranscript.style.display = 'none';
+        this.liveResults.style.display = 'none';
+        this.liveErrorSection.style.display = 'none';
+    }
+
+    _stopTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+    }
+
+    downloadLiveResult(format) {
+        const fullText = this.accumulatedSegments.map(s => s.text).join(' ');
+        let content, filename, mimeType;
+
+        if (format === 'txt') {
+            content = fullText;
+            filename = 'live-transcription.txt';
+            mimeType = 'text/plain';
+        } else if (format === 'srt') {
+            content = this._segmentsToSRT(this.accumulatedSegments);
+            filename = 'live-transcription.srt';
+            mimeType = 'text/plain';
+        } else {
+            return;
+        }
+
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    _segmentsToSRT(segments) {
+        return segments.map((seg, i) => {
+            return `${i + 1}\n${this._srtTime(seg.start)} --> ${this._srtTime(seg.end)}\n${seg.text}\n`;
+        }).join('\n');
+    }
+
+    _srtTime(seconds) {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = Math.floor(seconds % 60);
+        const ms = Math.round((seconds % 1) * 1000);
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')},${String(ms).padStart(3, '0')}`;
+    }
+}
+
+
+// ── Mode Tab Controller ────────────────────────────────────────────────────────
+
+class ModeController {
+    constructor(uploader, liveUI) {
+        this.uploader = uploader;
+        this.liveUI = liveUI;
+        this.tabUpload = document.getElementById('tabUpload');
+        this.tabLive = document.getElementById('tabLive');
+        this.panelUpload = document.getElementById('panelUpload');
+        this.panelLive = document.getElementById('panelLive');
+
+        this.tabUpload.addEventListener('click', () => this.switchTo('upload'));
+        this.tabLive.addEventListener('click', () => this.switchTo('live'));
+    }
+
+    switchTo(mode) {
+        if (mode === 'upload') {
+            // Stop any live recording before switching
+            if (this.liveUI.recorder) {
+                this.liveUI.recorder.cleanup();
+                this.liveUI.recorder = null;
+                this.liveUI._stopTimer();
+            }
+            this.tabUpload.classList.add('active');
+            this.tabLive.classList.remove('active');
+            this.panelUpload.style.display = 'block';
+            this.panelLive.style.display = 'none';
+        } else {
+            this.tabUpload.classList.remove('active');
+            this.tabLive.classList.add('active');
+            this.panelUpload.style.display = 'none';
+            this.panelLive.style.display = 'block';
+        }
+    }
+}
+
+
+// ── Init ───────────────────────────────────────────────────────────────────────
+
 document.addEventListener('DOMContentLoaded', () => {
     if (new URLSearchParams(window.location.search).get('embed') === 'true') {
         document.body.classList.add('embed-mode');
     }
-    new AudioTranscriber();
+    const uploader = new AudioTranscriber();
+    const liveUI = new LiveTranscriberUI();
+    new ModeController(uploader, liveUI);
 });

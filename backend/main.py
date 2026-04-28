@@ -1,15 +1,16 @@
 import os
+import json
 import logging
 from typing import Optional
-from fastapi import FastAPI, File, Query, UploadFile, HTTPException
+from fastapi import FastAPI, File, Query, UploadFile, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from .models import (
-    TranscriptionRequest, 
-    TranscriptionResponse, 
+    TranscriptionRequest,
+    TranscriptionResponse,
     TranscriptionStatusResponse,
     TranscriptionStatus,
     ErrorResponse
@@ -17,6 +18,7 @@ from .models import (
 from .audio_processor import AudioProcessor
 from .transcriber import WhisperTranscriber
 from .exporters import ExportManager
+from .websocket_handler import LiveTranscriptionSession
 
 # Load environment variables
 load_dotenv()
@@ -215,6 +217,51 @@ async def get_supported_formats():
         "audio_formats": list(audio_processor.supported_formats),
         "max_file_size_mb": MAX_FILE_SIZE_MB
     }
+
+
+@app.websocket("/ws/transcribe")
+async def websocket_transcribe(websocket: WebSocket, language_mode: str = "en"):
+    """Live transcription via WebSocket.
+
+    Protocol:
+      - Client sends binary frames (complete audio blobs, ~5s each from MediaRecorder).
+      - Server responds with JSON: {"segments": [...], "is_final": false, "full_text": "..."}
+      - Client sends JSON {"type": "done"} when recording stops.
+      - Server responds with JSON: {"is_final": true, "full_text": "...", "segments": [...]}
+    """
+    await websocket.accept()
+    session = LiveTranscriptionSession(transcriber, language_mode)
+    logger.info(f"Live transcription session started (language_mode={language_mode})")
+
+    try:
+        while True:
+            msg = await websocket.receive()
+            if msg.get('bytes'):
+                segments = await session.handle_audio_chunk(msg['bytes'])
+                await websocket.send_json({
+                    "segments": segments,
+                    "is_final": False,
+                    "full_text": session.get_full_text(),
+                })
+            elif msg.get('text'):
+                data = json.loads(msg['text'])
+                if data.get('type') == 'done':
+                    await websocket.send_json({
+                        "is_final": True,
+                        "full_text": session.get_full_text(),
+                        "segments": session.accumulated_segments,
+                    })
+                    await websocket.close()
+                    break
+    except WebSocketDisconnect:
+        logger.info("Live transcription WebSocket disconnected")
+    except Exception as e:
+        logger.error(f"WebSocket error: {e}")
+        try:
+            await websocket.send_json({"error": str(e), "is_final": True})
+            await websocket.close()
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":

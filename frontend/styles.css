@@ -402,6 +402,168 @@ footer {
     }
 }
 
+/* Mode tabs */
+.mode-tabs {
+    display: flex;
+    border-bottom: 2px solid #e9ecef;
+    margin-bottom: 28px;
+    gap: 4px;
+}
+
+.mode-tab {
+    padding: 10px 24px;
+    border: none;
+    background: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #888;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s ease;
+    border-radius: 6px 6px 0 0;
+}
+
+.mode-tab:hover {
+    color: #667eea;
+    background: #f0f4ff;
+}
+
+.mode-tab.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+    background: none;
+}
+
+/* Live record section */
+.live-section {
+    text-align: center;
+}
+
+.record-controls {
+    margin: 24px 0;
+}
+
+.btn-record {
+    background: #e53e3e;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    font-size: 1.1rem;
+}
+
+.btn-record:hover {
+    background: #c53030;
+    transform: translateY(-2px);
+}
+
+.btn-stop {
+    background: #4a5568;
+    color: white;
+    padding: 8px 20px;
+    font-size: 0.95rem;
+}
+
+.btn-stop:hover {
+    background: #2d3748;
+}
+
+.btn-stop:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.recording-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #e53e3e;
+}
+
+.record-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #e53e3e;
+    flex-shrink: 0;
+}
+
+.record-dot.pulsing {
+    animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.record-timer {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+    min-width: 40px;
+}
+
+/* Live transcript */
+.live-transcript {
+    margin: 20px 0;
+    border: 2px solid #667eea;
+    border-radius: 12px;
+    overflow: hidden;
+    max-height: 280px;
+    overflow-y: auto;
+    text-align: left;
+}
+
+.live-transcript-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: #667eea;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.live-badge {
+    background: #e53e3e;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.08em;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.live-transcript-text {
+    padding: 16px;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #333;
+    min-height: 60px;
+    white-space: pre-wrap;
+}
+
+.live-hint {
+    padding: 0 16px 12px;
+    color: #999;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.live-results {
+    margin-top: 16px;
+    text-align: center;
+}
+
 /* Embed mode — hides chrome when opened as a popup */
 body.embed-mode header,
 body.embed-mode footer {

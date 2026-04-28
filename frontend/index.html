@@ -14,79 +14,156 @@
         </header>
 
         <main>
-            <!-- Upload Section -->
-            <section class="upload-section" id="uploadSection">
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-content">
-                        <div class="upload-icon">📁</div>
-                        <h3>Drop your audio file here</h3>
-                        <p>or <span class="upload-link">click to browse</span></p>
-                        <input type="file" id="fileInput" accept=".mp3,.wav,.m4a,.aac,.ogg,.flac,.wma" hidden>
-                    </div>
-                </div>
-                
-                <div class="file-info" id="fileInfo" style="display: none;">
-                    <div class="file-details">
-                        <span class="file-name" id="fileName"></span>
-                        <span class="file-size" id="fileSize"></span>
+            <!-- Mode Tabs -->
+            <div class="mode-tabs">
+                <button class="mode-tab active" id="tabUpload">Upload File</button>
+                <button class="mode-tab" id="tabLive">Live Record</button>
+            </div>
+
+            <!-- ── UPLOAD PANEL ── -->
+            <div id="panelUpload">
+                <!-- Upload Section -->
+                <section class="upload-section" id="uploadSection">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <div class="upload-icon">📁</div>
+                            <h3>Drop your audio file here</h3>
+                            <p>or <span class="upload-link">click to browse</span></p>
+                            <input type="file" id="fileInput" accept=".mp3,.wav,.m4a,.aac,.ogg,.flac,.wma" hidden>
+                        </div>
                     </div>
 
-                    <div class="language-toggle">
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <div class="file-details">
+                            <span class="file-name" id="fileName"></span>
+                            <span class="file-size" id="fileSize"></span>
+                        </div>
+
+                        <div class="language-toggle">
+                            <span class="toggle-label">Language</span>
+                            <div class="toggle-options">
+                                <label class="toggle-option">
+                                    <input type="radio" name="languageMode" value="en" checked>
+                                    <span class="toggle-btn">English only</span>
+                                </label>
+                                <label class="toggle-option">
+                                    <input type="radio" name="languageMode" value="auto">
+                                    <span class="toggle-btn">Auto-detect</span>
+                                </label>
+                            </div>
+                            <p class="toggle-hint" id="toggleHint">Best accuracy for English-language meetings</p>
+                        </div>
+
+                        <button class="btn btn-primary" id="startTranscription">Start Transcription</button>
+                    </div>
+                </section>
+
+                <!-- Progress Section -->
+                <section class="progress-section" id="progressSection" style="display: none;">
+                    <h3>Transcribing Audio...</h3>
+                    <div class="progress-bar-row">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <span class="progress-percent" id="progressPercent">0%</span>
+                    </div>
+                    <p class="progress-text" id="progressText">Initializing...</p>
+                </section>
+
+                <!-- Results Section -->
+                <section class="results-section" id="resultsSection" style="display: none;">
+                    <h3>Transcription Complete!</h3>
+                    <div class="results-content">
+                        <div class="transcription-preview" id="transcriptionPreview"></div>
+                        <div class="download-options">
+                            <h4>Download Formats:</h4>
+                            <div class="download-buttons">
+                                <button class="btn btn-download" data-format="txt">📄 TXT</button>
+                                <button class="btn btn-download" data-format="json">📊 JSON</button>
+                                <button class="btn btn-download" data-format="srt">🎬 SRT</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" id="newTranscription">Transcribe Another File</button>
+                </section>
+
+                <!-- Error Section -->
+                <section class="error-section" id="errorSection" style="display: none;">
+                    <div class="error-content">
+                        <h3>❌ Error</h3>
+                        <p id="errorMessage"></p>
+                        <button class="btn btn-secondary" id="tryAgain">Try Again</button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ── LIVE RECORD PANEL ── -->
+            <div id="panelLive" style="display: none;">
+                <section class="live-section">
+                    <!-- Language toggle -->
+                    <div class="language-toggle" style="margin-bottom: 24px;">
                         <span class="toggle-label">Language</span>
                         <div class="toggle-options">
                             <label class="toggle-option">
-                                <input type="radio" name="languageMode" value="en" checked>
+                                <input type="radio" name="liveLanguageMode" value="en" checked>
                                 <span class="toggle-btn">English only</span>
                             </label>
                             <label class="toggle-option">
-                                <input type="radio" name="languageMode" value="auto">
+                                <input type="radio" name="liveLanguageMode" value="auto">
                                 <span class="toggle-btn">Auto-detect</span>
                             </label>
                         </div>
-                        <p class="toggle-hint" id="toggleHint">Best accuracy for English-language meetings</p>
                     </div>
 
-                    <button class="btn btn-primary" id="startTranscription">Start Transcription</button>
-                </div>
-            </section>
-
-            <!-- Progress Section -->
-            <section class="progress-section" id="progressSection" style="display: none;">
-                <h3>Transcribing Audio...</h3>
-                <div class="progress-bar-row">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <span class="progress-percent" id="progressPercent">0%</span>
-                </div>
-                <p class="progress-text" id="progressText">Initializing...</p>
-            </section>
-
-            <!-- Results Section -->
-            <section class="results-section" id="resultsSection" style="display: none;">
-                <h3>Transcription Complete!</h3>
-                <div class="results-content">
-                    <div class="transcription-preview" id="transcriptionPreview"></div>
-                    <div class="download-options">
-                        <h4>Download Formats:</h4>
-                        <div class="download-buttons">
-                            <button class="btn btn-download" data-format="txt">📄 TXT</button>
-                            <button class="btn btn-download" data-format="json">📊 JSON</button>
-                            <button class="btn btn-download" data-format="srt">🎬 SRT</button>
+                    <!-- Record controls -->
+                    <div class="record-controls" id="recordControls">
+                        <button class="btn btn-record" id="startRecord">
+                            <span class="record-dot"></span> Start Recording
+                        </button>
+                        <div class="recording-status" id="recordingStatus" style="display: none;">
+                            <span class="record-dot pulsing"></span>
+                            <span>Recording</span>
+                            <span class="record-timer" id="recordTimer">0:00</span>
+                            <button class="btn btn-stop" id="stopRecord">Stop</button>
                         </div>
                     </div>
-                </div>
-                <button class="btn btn-secondary" id="newTranscription">Transcribe Another File</button>
-            </section>
 
-            <!-- Error Section -->
-            <section class="error-section" id="errorSection" style="display: none;">
-                <div class="error-content">
-                    <h3>❌ Error</h3>
-                    <p id="errorMessage"></p>
-                    <button class="btn btn-secondary" id="tryAgain">Try Again</button>
-                </div>
-            </section>
+                    <!-- Live transcript (visible while recording) -->
+                    <div class="live-transcript" id="liveTranscript" style="display: none;">
+                        <div class="live-transcript-header">
+                            <span>Live Transcript</span>
+                            <span class="live-badge">LIVE</span>
+                        </div>
+                        <div class="live-transcript-text" id="liveTranscriptText"></div>
+                        <p class="live-hint" id="liveHint">Listening... transcript will appear every ~5 seconds</p>
+                    </div>
+
+                    <!-- Final results (after recording stops) -->
+                    <div class="live-results" id="liveResults" style="display: none;">
+                        <h3>Recording Complete</h3>
+                        <div class="results-content">
+                            <div class="transcription-preview" id="liveTranscriptionPreview"></div>
+                            <div class="download-options">
+                                <h4>Download Formats:</h4>
+                                <div class="download-buttons">
+                                    <button class="btn btn-download-live" data-format="txt">📄 TXT</button>
+                                    <button class="btn btn-download-live" data-format="srt">🎬 SRT</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" id="newRecording">Record Again</button>
+                    </div>
+
+                    <!-- Live error -->
+                    <div class="error-section" id="liveErrorSection" style="display: none;">
+                        <div class="error-content">
+                            <h3>❌ Error</h3>
+                            <p id="liveErrorMessage"></p>
+                            <button class="btn btn-secondary" id="liveTryAgain">Try Again</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </main>
 
         <footer>

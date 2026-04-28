@@ -418,8 +418,53 @@ class WhisperTranscriber:
         """Clean up job data after download."""
         if job_id in self.jobs:
             del self.jobs[job_id]
-        
+
         # Remove result file
         result_file = os.path.join(self.results_dir, f"{job_id}.json")
         if os.path.exists(result_file):
             os.remove(result_file)
+
+    def transcribe_chunk(
+        self,
+        audio_bytes: bytes,
+        offset_seconds: float = 0.0,
+        language: Optional[str] = None
+    ) -> tuple:
+        """Transcribe a raw audio chunk (from live recording) synchronously.
+
+        Returns (segments, chunk_duration) where segments have timestamps
+        adjusted by offset_seconds.
+        """
+        import tempfile
+        self.load_model()
+
+        with tempfile.NamedTemporaryFile(suffix='.webm', delete=False) as f:
+            f.write(audio_bytes)
+            tmp_path = f.name
+
+        try:
+            temperature = 0.0 if language == 'en' else 0.2
+            kwargs = dict(
+                word_timestamps=False,
+                temperature=temperature,
+                beam_size=5,
+            )
+            if language:
+                kwargs['language'] = language
+
+            segments_gen, info = self.model.transcribe(tmp_path, **kwargs)
+            segments = []
+            for seg in segments_gen:
+                text = seg.text.strip()
+                if text:
+                    segments.append({
+                        'start': round(seg.start + offset_seconds, 2),
+                        'end': round(seg.end + offset_seconds, 2),
+                        'text': text,
+                    })
+            return segments, info.duration
+        finally:
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
